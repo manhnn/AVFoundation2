@@ -10,19 +10,22 @@ import AVFoundation
 
 class PlayVideoViewController: UIViewController {
     
-    // MARK: - Property
+    // MARK: - UI + Property
     @IBOutlet weak var videoView: UIView!
+    @IBOutlet weak var timeSlider: UISlider!
+    @IBOutlet weak var currentTimeLabel: UILabel!
+    @IBOutlet weak var durationTimeLabel: UILabel!
+    
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
     
     var isVideoPlaying = false
+    var isZoomVideo = false
     
-    @IBOutlet weak var timeSlider: UISlider!
-    @IBOutlet weak var currentTimeLabel: UILabel!
-    @IBOutlet weak var durationLabel: UILabel!
-
+    // MARK: - Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
         let url = URL(fileURLWithPath: videoString)
         player = AVPlayer(url: url)
@@ -30,7 +33,6 @@ class PlayVideoViewController: UIViewController {
         addTimeObserver()
         playerLayer = AVPlayerLayer(player: player)
         playerLayer.videoGravity = .resizeAspect
-        
         videoView.layer.addSublayer(playerLayer)
     }
     
@@ -38,40 +40,41 @@ class PlayVideoViewController: UIViewController {
         super.viewDidLayoutSubviews()
         playerLayer.frame = videoView.bounds
     }
-
+    
     func addTimeObserver() {
         let interval = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        print(interval)
         let mainQueue = DispatchQueue.main
         _ = player.addPeriodicTimeObserver(forInterval: interval, queue: mainQueue, using: { [weak self] time in
             guard let currentItem = self?.player.currentItem else {return}
             self?.timeSlider.maximumValue = Float(currentItem.duration.seconds)
             self?.timeSlider.minimumValue = 0
             self?.timeSlider.value = Float(currentItem.currentTime().seconds)
-            self?.currentTimeLabel.text = self?.getTimeString(from: currentItem.currentTime())
+            self?.currentTimeLabel.text = self!.getTimeString(from: currentItem.currentTime())
         })
     }
-
+    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == "duration", let duration = player.currentItem?.duration.seconds, duration > 0.0 {
-            self.durationLabel.text = getTimeString(from: player.currentItem!.duration)
+        if keyPath == "duration", let durationTime = player.currentItem?.duration.seconds, durationTime > 0.0 {
+            durationTimeLabel.text = getTimeString(from: player.currentItem!.duration)
         }
     }
-
-    // MARK: - Get time to String Label
+    
     func getTimeString(from time: CMTime) -> String {
         let totalSeconds = CMTimeGetSeconds(time)
-        let hours = Int(totalSeconds / 3600)
+        let hour = Int(totalSeconds / 3600)
         let minutes = Int(totalSeconds / 60) % 60
         let seconds = Int(totalSeconds.truncatingRemainder(dividingBy: 60))
-        if hours > 0 {
-            return String(format: "%i:%02i:%02i", arguments: [hours,minutes,seconds])
+        if hour > 0 {
+            return String(format: "%i:%02i:%02i", arguments: [hour, minutes, seconds])
         }
         else {
-            return String(format: "%02i:%02i", arguments: [minutes,seconds])
+            return String(format: "%02i:%02i", arguments: [minutes, seconds])
         }
     }
-
-    // MARK: - ButtonActions
+    
+    
+    // MARK: - Button Action Video
     @IBAction func playPressed(_ sender: UIButton) {
         if isVideoPlaying {
             player.pause()
@@ -83,30 +86,45 @@ class PlayVideoViewController: UIViewController {
         }
         isVideoPlaying = !isVideoPlaying
     }
-
+    
+    @IBAction func backwardPressed(_ sender: Any) {
+        let currentTime = CMTimeGetSeconds(player.currentTime())
+        let newTime = max(0, currentTime - 5.0)
+        let time: CMTime = CMTimeMake(value: Int64(newTime * 1000), timescale: 1000)
+        player.seek(to: time)
+    }
+    
     @IBAction func forwardPressed(_ sender: Any) {
         guard let duration = player.currentItem?.duration else {return}
         let currentTime = CMTimeGetSeconds(player.currentTime())
         let newTime = currentTime + 5.0
-
-        if newTime < (CMTimeGetSeconds(duration) - 5.0) {
+        if newTime < CMTimeGetSeconds(duration) - 5.0 {
             let time: CMTime = CMTimeMake(value: Int64(newTime * 1000), timescale: 1000)
             player.seek(to: time)
         }
     }
-
-    @IBAction func backwardsPressed(_ sender: Any) {
-        let currentTime = CMTimeGetSeconds(player.currentTime())
-        var newTime = currentTime - 5.0
-
-        if newTime < 0 {
-            newTime = 0
+    
+    @IBAction func zoomVideo(_ sender: Any) {
+        isZoomVideo = !isZoomVideo
+        if isZoomVideo {
+            playerLayer.videoGravity = .resizeAspectFill
         }
-        let time: CMTime = CMTimeMake(value: Int64(newTime * 1000), timescale: 1000)
-        player.seek(to: time)
+        else {
+            playerLayer.videoGravity = .resizeAspect
+        }
     }
-
+    
+    @IBAction func mutePressed(_ sender: UIButton) {
+        if player.isMuted {
+            sender.setImage(UIImage(named: "speaker"), for: .normal)
+        }
+        else {
+            sender.setImage(UIImage(named: "mute"), for: .normal)
+        }
+        player.isMuted = !player.isMuted
+    }
+    
     @IBAction func sliderValueChanged(_ sender: UISlider) {
-        player.seek(to: CMTimeMake(value: Int64(sender.value * 1000), timescale: 1000))
+        player.seek(to: CMTimeMake(value: Int64(Int(sender.value * 1000)), timescale: 1000))
     }
 }
