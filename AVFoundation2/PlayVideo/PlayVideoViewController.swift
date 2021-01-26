@@ -21,6 +21,9 @@ class PlayVideoViewController: UIViewController {
     
     var isVideoPlaying = false
     var isZoomVideo = false
+    var listRate: [Float] = [1, 1.25, 1.5, 2, 0.25, 0.5, 0.75]
+    var rateNumber: Int = 0
+    var isLoop = false
     
     // MARK: - Methods
     override func viewDidLoad() {
@@ -127,4 +130,35 @@ class PlayVideoViewController: UIViewController {
     @IBAction func sliderValueChanged(_ sender: UISlider) {
         player.seek(to: CMTimeMake(value: Int64(Int(sender.value * 1000)), timescale: 1000))
     }
+    
+    @IBAction func changeSpeed(_ sender: UIButton) {
+        rateNumber += 1
+        rateNumber = rateNumber % listRate.count
+        player.rate = listRate[rateNumber]
+        sender.setTitle("x\(player.rate)", for: .normal)
+    }
+    
+    @IBAction func loopVideo(_ sender: UIButton) {
+        NotificationCenter.default.addObserver(self, selector: #selector(doingWhenPlayingDone), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+        isLoop = !isLoop
+        if isLoop {
+            sender.setBackgroundImage(UIImage(named: "looped"), for: .normal)
+        }
+        else {
+            sender.setBackgroundImage(UIImage(named: "loop"), for: .normal)
+        }
+    }
+    
+    @objc func doingWhenPlayingDone() {
+        if isLoop {
+            player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+            player.playImmediately(atRate: listRate[rateNumber])
+            player.play()
+        }
+    }
+    
+    @IBAction func cutVideo(_ sender: Any) {
+        
+    }
+    
 }
