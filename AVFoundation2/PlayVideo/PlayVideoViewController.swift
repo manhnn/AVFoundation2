@@ -15,13 +15,15 @@ class PlayVideoViewController: UIViewController {
     @IBOutlet weak var timeSlider: UISlider!
     @IBOutlet weak var currentTimeLabel: UILabel!
     @IBOutlet weak var durationTimeLabel: UILabel!
+    @IBOutlet weak var thumbnailView: UIImageView!
     
+    var composition: AVMutableComposition!
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
     
     var isVideoPlaying = false
     var isZoomVideo = false
-    var listRate: [Float] = [1, 1.25, 1.5, 2, 0.25, 0.5, 0.75]
+    var listRate: [Float] = [1, 1.25, 1.5, 1.75, 2, 0.25, 0.5, 0.75]
     var rateNumber: Int = 0
     var isLoop = false
     
@@ -157,8 +159,50 @@ class PlayVideoViewController: UIViewController {
         }
     }
     
-    @IBAction func cutVideo(_ sender: Any) {
-        
+    // MARK: - Trim video
+    @IBAction func trimVideoButton(_ sender: Any) {
+        self.settingComposition()
+        self.updatePlayerItem()
     }
     
+    func settingComposition() {
+        self.composition = AVMutableComposition()
+        
+        let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
+        let url = URL(fileURLWithPath: videoString)
+        let originAsset = AVAsset(url: url as URL)
+        let originVideoTracks = originAsset.tracks(withMediaType: .video)
+        
+        let trimRange = currentTrimRange()
+        originVideoTracks.forEach { (originVideoTrack) in
+            let track = self.composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+            try? track?.insertTimeRange(CMTimeRange(start: trimRange.start + originVideoTrack.timeRange.start, duration: trimRange.duration), of: originVideoTrack, at: .zero)
+        }
+    }
+    
+    private func currentTrimRange() -> CMTimeRange {
+        //let trimRange = self.trimView.trimRange
+        //let asset = AVAsset(url: sourceURL1 as URL)
+        //let duration = asset.duration.seconds
+        return CMTimeRange(start: CMTime(value: CMTimeValue(0.9 * CGFloat(120) * 1000), timescale: 1000), end: CMTime(value: CMTimeValue(1 * CGFloat(120) * 1000), timescale: 1000))
+    }
+    
+    func updatePlayerItem() {
+        if let currentItem = self.player.currentItem {
+            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
+        }
+        
+        let playerItem = AVPlayerItem(asset: self.composition)
+        self.player.replaceCurrentItem(with: playerItem)
+        durationTimeLabel.text = getTimeString(from: player.currentItem!.duration)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidPlayToEndTime(_:)), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
+    }
+    
+    @objc func playerItemDidPlayToEndTime(_ notification: Notification) {
+        //let currentTrimRange = self.currentTrimRange()
+        self.player.pause()
+        self.player.seek(to: CMTime.zero, toleranceBefore: .zero, toleranceAfter: .zero)
+        //self.trimView.currentTime = CGFloat(currentTrimRange.start.seconds)
+    }
 }
