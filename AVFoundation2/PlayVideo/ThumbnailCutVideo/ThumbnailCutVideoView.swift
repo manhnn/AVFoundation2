@@ -1,5 +1,5 @@
 //
-//  CutVideoView.swift
+//  ThumbnailCutVideoView.swift
 //  AVFoundation2
 //
 //  Created by Manh Nguyen Ngoc on 27/01/2021.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CutVideoView: UIView {
+class ThumbnailCutVideoView: UIView {
     public var leftConstraint: NSLayoutConstraint?
     public var rightConstraint: NSLayoutConstraint?
     public var bottomConstraint: NSLayoutConstraint?
@@ -17,7 +17,7 @@ class CutVideoView: UIView {
     public var rightView: UIView!
     public var leftLabel: UILabel!
     public var rightLabel: UILabel!
-    public var cutVideo: CutVideo!
+    public var cutVideo: ThumbnailCutVideo!
     
     public var leftStartTime: Float!
     public var rightEndTime: Float!
@@ -44,7 +44,7 @@ class CutVideoView: UIView {
             imageView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         }
         
-        cutVideo = CutVideo(frame: self.frame)
+        cutVideo = ThumbnailCutVideo(frame: self.frame)
         cutVideo.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(cutVideo)
         
@@ -90,6 +90,7 @@ class CutVideoView: UIView {
         // MARK: - add new left right label
         leftLabel = UILabel(frame: self.frame)
         rightLabel = UILabel(frame: self.frame)
+        
         leftStartTime = Float(leftConstraint!.constant / frame.width)
         leftLabel.text = String(format: "%.0f", leftStartTime * 100) + "%"
         rightEndTime = Float(1 - rightConstraint!.constant / frame.width)
@@ -113,8 +114,8 @@ class CutVideoView: UIView {
         leftConstraint?.constant = (distance >= 0) ? distance : cutVideo.frame.minX
         leftStartTime = Float(leftConstraint!.constant / frame.width)
         leftLabel.text = String(format: "%.0f", leftStartTime * 100) + "%"
-        
     }
+    
     @objc func rightPanGesture(_ sender: Any?) {
         let panGesture = sender as! UIPanGestureRecognizer
         let point = panGesture.location(in: self)
@@ -122,7 +123,6 @@ class CutVideoView: UIView {
         rightConstraint?.constant = (distance >= 0) ? distance : 0
         rightEndTime = Float(1 - rightConstraint!.constant / frame.width)
         rightLabel.text = String(format: "%.0f", rightEndTime * 100) + "%"
-        
     }
 }
 

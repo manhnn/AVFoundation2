@@ -19,11 +19,13 @@ class PlayVideoViewController: UIViewController {
     @IBOutlet weak var durationTimeLabel: UILabel!
     @IBOutlet weak var saveVideoButton: UIButton!
     @IBOutlet weak var trimButton: UIButton!
+    @IBOutlet weak var musicButton: UIButton!
     
-    var cutAudioView: CutVideoView!
+    var cutAudioView: ThumbnailCutVideoView!
     var mutableComposition: AVMutableComposition!
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
+    var originVideo: AVAsset?
     
     var url: URL?
     var isVideoPlaying = false
@@ -184,7 +186,7 @@ class PlayVideoViewController: UIViewController {
             let asset = AVURLAsset(url: path , options: nil)
             let imgGenerator = AVAssetImageGenerator(asset: asset)
             imgGenerator.appliesPreferredTrackTransform = true
-            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 2, timescale: 1), actualTime: nil)
             let thumbnail = UIImage(cgImage: cgImage)
 
             return thumbnail
@@ -195,13 +197,42 @@ class PlayVideoViewController: UIViewController {
         }
     }
     
+    // MARK: - Add music
+    @IBAction func addMusicForVideoButtonAction(_ sender: UIButton) {
+        let musicString = Bundle.main.path(forResource: "SampleAudio1", ofType: "mp3")!
+        self.mutableComposition = AVMutableComposition()
+        url = URL(fileURLWithPath: musicString)
+        let originAsset = AVAsset(url: url!)
+        let originVideoTracks = originAsset.tracks
+        
+        let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
+        let url2 = URL(fileURLWithPath: videoString)
+        originVideo = AVAsset(url: url2)
+        
+        originVideoTracks.forEach { (track) in
+            if track.mediaType == .audio {
+                let trackComposition = self.mutableComposition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: track.trackID)
+                try? trackComposition?.insertTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: CMTime(seconds: 60, preferredTimescale: 1)), of: track, at: .zero)
+                trackComposition?.scaleTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: CMTime(seconds: 60, preferredTimescale: 1)), toDuration: CMTime(seconds: 25, preferredTimescale: 1))
+            }
+        }
+        let trackCompositionz = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+        try? trackCompositionz?.insertTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: originAsset.duration), of: originVideo!.tracks(withMediaType: .video).first!, at: .zero)
+        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        
+        playerItem.audioTimePitchAlgorithm = .spectral
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
+    
     // MARK: - Trim video
     @IBAction func trimVideoButton(_ sender: Any) {
+        
         saveVideoButton.isHidden = false
         trimButton.isHidden = true
         
         // Add CutAudioView
-        cutAudioView = CutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: url!)!)
+        cutAudioView = ThumbnailCutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: url!)!)
         cutAudioView.backgroundColor = .clear
         cutAudioView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(cutAudioView)
@@ -222,13 +253,14 @@ class PlayVideoViewController: UIViewController {
     func buildComposition() {
         self.mutableComposition = AVMutableComposition()
         
-        let originAsset = AVAsset(url: url! as URL)
-        let originVideoTracks = originAsset.tracks
+        originVideo = AVAsset(url: url! as URL)
+        let originVideoTracks = originVideo!.tracks
         
         let trimRange = currentTrimRange()
         originVideoTracks.forEach { (originVideoTrack) in
             let track = self.mutableComposition.addMutableTrack(withMediaType: originVideoTrack.mediaType, preferredTrackID: originVideoTrack.trackID)
             try? track?.insertTimeRange(CMTimeRange(start: trimRange.start + originVideoTrack.timeRange.start, duration: trimRange.duration), of: originVideoTrack, at: .zero)
+            track?.scaleTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: CMTime(seconds: 60, preferredTimescale: 1)), toDuration: CMTime(seconds: 25, preferredTimescale: 1))
         }
     }
     
@@ -256,3 +288,6 @@ class PlayVideoViewController: UIViewController {
         self.player.seek(to: CMTime.zero, toleranceBefore: .zero, toleranceAfter: .zero)
     }
 }
+
+
+

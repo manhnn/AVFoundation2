@@ -3,4 +3,54 @@
    uuid = "D0150EB5-BE3D-46A7-864E-0EB888C1D312"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "79916D1F-1280-452E-BC3E-D94DB3109C86"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AVFoundation2/PlayVideo/PlayVideoViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "212"
+            endingLineNumber = "212"
+            landmarkName = "addMusicForVideoButtonAction(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "79916D1F-1280-452E-BC3E-D94DB3109C86 - 23f35fd1bd7abe96"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AVFoundation2.PlayVideoViewController.addMusicForVideoButtonAction(__C.UIButton) -&gt; ()"
+                  moduleName = "AVFoundation2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/nguyenmanh/Documents/Learn_iOS_Solar/AVFoundation2/AVFoundation2/PlayVideo/PlayVideoViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "207"
+                  endingLineNumber = "207"
+                  offsetFromSymbolStart = "1592">
+               </Location>
+               <Location
+                  uuid = "79916D1F-1280-452E-BC3E-D94DB3109C86 - ffe33f54d4ecfa88"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (__C.AVAssetTrack) -&gt; () in AVFoundation2.PlayVideoViewController.addMusicForVideoButtonAction(__C.UIButton) -&gt; ()"
+                  moduleName = "AVFoundation2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/nguyenmanh/Documents/Learn_iOS_Solar/AVFoundation2/AVFoundation2/PlayVideo/PlayVideoViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "208"
+                  endingLineNumber = "208"
+                  offsetFromSymbolStart = "80">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

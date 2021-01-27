@@ -1,5 +1,5 @@
 //
-//  CutVideo.swift
+//  ThumbnailCutVideo.swift
 //  AVFoundation2
 //
 //  Created by Manh Nguyen Ngoc on 27/01/2021.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CutVideo: UIView {
+class ThumbnailCutVideo: UIView {
 
     var topStartPoint: CGPoint?
     var bottomStartPoint: CGPoint?

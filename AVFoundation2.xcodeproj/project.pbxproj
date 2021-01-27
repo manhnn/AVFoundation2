@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		253A7D7B25C100F700319B38 /* ThumbnailCutVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253A7D7A25C100F700319B38 /* ThumbnailCutVideo.swift */; };
 		253A7D8025C1011100319B38 /* ThumbnailCutVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253A7D7F25C1011100319B38 /* ThumbnailCutVideoView.swift */; };
+		253A7D8B25C1574800319B38 /* SampleAudio1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 253A7D8A25C1574800319B38 /* SampleAudio1.mp3 */; };
 		257D000225BEB6D9008576D4 /* PlayVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257D000025BEB6D9008576D4 /* PlayVideoViewController.swift */; };
 		257D000325BEB6D9008576D4 /* PlayVideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 257D000125BEB6D9008576D4 /* PlayVideoViewController.xib */; };
 		257D000825BEB942008576D4 /* SampleVideo1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 257D000725BEB942008576D4 /* SampleVideo1.mp4 */; };
@@ -22,6 +23,7 @@
 /* Begin PBXFileReference section */
 		253A7D7A25C100F700319B38 /* ThumbnailCutVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCutVideo.swift; sourceTree = "<group>"; };
 		253A7D7F25C1011100319B38 /* ThumbnailCutVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCutVideoView.swift; sourceTree = "<group>"; };
+		253A7D8A25C1574800319B38 /* SampleAudio1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = SampleAudio1.mp3; sourceTree = "<group>"; };
 		257D000025BEB6D9008576D4 /* PlayVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayVideoViewController.swift; sourceTree = "<group>"; };
 		257D000125BEB6D9008576D4 /* PlayVideoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlayVideoViewController.xib; sourceTree = "<group>"; };
 		257D000725BEB942008576D4 /* SampleVideo1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = SampleVideo1.mp4; sourceTree = "<group>"; };
@@ -52,6 +54,14 @@
 				253A7D7F25C1011100319B38 /* ThumbnailCutVideoView.swift */,
 			);
 			path = ThumbnailCutVideo;
+			sourceTree = "<group>";
+		};
+		253A7D8525C153EE00319B38 /* SampleMusic */ = {
+			isa = PBXGroup;
+			children = (
+				253A7D8A25C1574800319B38 /* SampleAudio1.mp3 */,
+			);
+			path = SampleMusic;
 			sourceTree = "<group>";
 		};
 		257D000625BEB934008576D4 /* SampleVideo */ = {
@@ -90,6 +100,7 @@
 		257DFFE625BEB554008576D4 /* AVFoundation2 */ = {
 			isa = PBXGroup;
 			children = (
+				253A7D8525C153EE00319B38 /* SampleMusic */,
 				257D000625BEB934008576D4 /* SampleVideo */,
 				257DFFFF25BEB6C4008576D4 /* PlayVideo */,
 				257D000B25BEC325008576D4 /* RecordAudio */,
@@ -171,6 +182,7 @@
 				257DFFF425BEB555008576D4 /* LaunchScreen.storyboard in Resources */,
 				257D000825BEB942008576D4 /* SampleVideo1.mp4 in Resources */,
 				257D000325BEB6D9008576D4 /* PlayVideoViewController.xib in Resources */,
+				253A7D8B25C1574800319B38 /* SampleAudio1.mp3 in Resources */,
 				257D000F25BEC345008576D4 /* RecordAudioViewController.xib in Resources */,
 				257DFFF125BEB555008576D4 /* Assets.xcassets in Resources */,
 			);
