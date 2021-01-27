@@ -225,7 +225,32 @@ class PlayVideoViewController: UIViewController {
     }
     
     @IBAction func filterVideo(_ sender: Any) {
+        let filter = CIFilter(name: "CIGaussianBlur")!
         
+        let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
+        url = URL(fileURLWithPath: videoString)
+        let originAsset = AVAsset(url: url!)
+        
+        let composition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
+
+          // Clamp to avoid blurring transparent pixels at the image edges
+            let source = request.sourceImage.clampedToExtent()
+          filter.setValue(source, forKey: kCIInputImageKey)
+
+          // Vary filter parameters based on video timing
+          let seconds = CMTimeGetSeconds(request.compositionTime)
+            filter.setValue(seconds * 0.5, forKey: kCIInputRadiusKey)
+
+          // Crop the blurred output to the bounds of the original image
+            let output = filter.outputImage!.cropped(to: request.sourceImage.extent)
+
+          // Provide the filter output to the composition
+          request.finish(with: output, context: nil)
+        })
+        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem.videoComposition = composition
+        playerItem.audioTimePitchAlgorithm = .varispeed
+        player.replaceCurrentItem(with: playerItem)
     }
     
     
