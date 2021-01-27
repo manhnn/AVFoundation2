@@ -12,15 +12,20 @@ class PlayVideoViewController: UIViewController {
     
     // MARK: - UI + Property
     @IBOutlet weak var videoView: UIView!
+    @IBOutlet weak var navigationView: UIView!
+    @IBOutlet weak var sliderView: UIView!
     @IBOutlet weak var timeSlider: UISlider!
     @IBOutlet weak var currentTimeLabel: UILabel!
     @IBOutlet weak var durationTimeLabel: UILabel!
-    @IBOutlet weak var thumbnailView: UIImageView!
+    @IBOutlet weak var saveVideoButton: UIButton!
+    @IBOutlet weak var trimButton: UIButton!
     
+    var cutAudioView: CutVideoView!
     var composition: AVMutableComposition!
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
     
+    var url: URL?
     var isVideoPlaying = false
     var isZoomVideo = false
     var listRate: [Float] = [1, 1.25, 1.5, 1.75, 2, 0.25, 0.5, 0.75]
@@ -32,8 +37,8 @@ class PlayVideoViewController: UIViewController {
         super.viewDidLoad()
         
         let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
-        let url = URL(fileURLWithPath: videoString)
-        player = AVPlayer(url: url)
+        url = URL(fileURLWithPath: videoString)
+        player = AVPlayer(url: url!)
         player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
         addTimeObserver()
         playerLayer = AVPlayerLayer(player: player)
@@ -159,32 +164,79 @@ class PlayVideoViewController: UIViewController {
         }
     }
     
-    // MARK: - Trim video
-    @IBAction func trimVideoButton(_ sender: Any) {
+    @IBAction func saveVideoButtonAction(_ sender: Any) {
+        saveVideoButton.isHidden = true
+        cutAudioView.isHidden = true
+        trimButton.isHidden = false
+        
+        self.sliderView.isUserInteractionEnabled = true
+        self.navigationView.isUserInteractionEnabled = true
+        self.sliderView.alpha = 1
+        self.navigationView.alpha = 1
+        self.videoView.alpha = 1
+        
         self.settingComposition()
         self.updatePlayerItem()
+    }
+    
+    func getThumbnailFrom(path: URL) -> UIImage? {
+        do {
+            let asset = AVURLAsset(url: path , options: nil)
+            let imgGenerator = AVAssetImageGenerator(asset: asset)
+            imgGenerator.appliesPreferredTrackTransform = true
+            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+            let thumbnail = UIImage(cgImage: cgImage)
+
+            return thumbnail
+        }
+        catch let error {
+            print("*** Error generating thumbnail: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    // MARK: - Trim video
+    @IBAction func trimVideoButton(_ sender: Any) {
+        saveVideoButton.isHidden = false
+        trimButton.isHidden = true
+        
+        // Add CutAudioView
+        cutAudioView = CutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: url!)!)
+        cutAudioView.backgroundColor = .clear
+        cutAudioView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(cutAudioView)
+
+        cutAudioView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 40).isActive = true
+        cutAudioView.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -40).isActive = true
+        cutAudioView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 100).isActive = true
+        cutAudioView.heightAnchor.constraint(equalToConstant: 62).isActive = true
+
+        // updown alpha
+        self.sliderView.isUserInteractionEnabled = false
+        self.navigationView.isUserInteractionEnabled = false
+        self.sliderView.alpha = 0.1
+        self.navigationView.alpha = 0.1
+        self.videoView.alpha = 0.1
     }
     
     func settingComposition() {
         self.composition = AVMutableComposition()
         
-        let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
-        let url = URL(fileURLWithPath: videoString)
-        let originAsset = AVAsset(url: url as URL)
-        let originVideoTracks = originAsset.tracks(withMediaType: .video)
+        let originAsset = AVAsset(url: url! as URL)
+        let originVideoTracks = originAsset.tracks
         
         let trimRange = currentTrimRange()
         originVideoTracks.forEach { (originVideoTrack) in
-            let track = self.composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+            let track = self.composition.addMutableTrack(withMediaType: originVideoTrack.mediaType, preferredTrackID: originVideoTrack.trackID)
             try? track?.insertTimeRange(CMTimeRange(start: trimRange.start + originVideoTrack.timeRange.start, duration: trimRange.duration), of: originVideoTrack, at: .zero)
         }
     }
     
     private func currentTrimRange() -> CMTimeRange {
-        //let trimRange = self.trimView.trimRange
-        //let asset = AVAsset(url: sourceURL1 as URL)
-        //let duration = asset.duration.seconds
-        return CMTimeRange(start: CMTime(value: CMTimeValue(0.9 * CGFloat(120) * 1000), timescale: 1000), end: CMTime(value: CMTimeValue(1 * CGFloat(120) * 1000), timescale: 1000))
+        let startTime = CGFloat(cutAudioView.leftStartTime)
+        let endTime = CGFloat(cutAudioView.rightEndTime)
+        let duration = player.currentItem?.duration.seconds
+        return CMTimeRange(start: CMTime(value: CMTimeValue(startTime * CGFloat(duration!) * 1000), timescale: 1000), end: CMTime(value: CMTimeValue(endTime * CGFloat(duration!) * 1000), timescale: 1000))
     }
     
     func updatePlayerItem() {
@@ -200,9 +252,7 @@ class PlayVideoViewController: UIViewController {
     }
     
     @objc func playerItemDidPlayToEndTime(_ notification: Notification) {
-        //let currentTrimRange = self.currentTrimRange()
         self.player.pause()
         self.player.seek(to: CMTime.zero, toleranceBefore: .zero, toleranceAfter: .zero)
-        //self.trimView.currentTime = CGFloat(currentTrimRange.start.seconds)
     }
 }
