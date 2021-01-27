@@ -73,12 +73,12 @@ class CutVideoView: UIView {
         self.addSubview(rightView)
         
         leftView.leftAnchor.constraint(equalTo: cutVideo.leftAnchor).isActive = true
-        leftView.heightAnchor.constraint(equalToConstant: self.frame.height).isActive = true
+        leftView.heightAnchor.constraint(equalToConstant: self.frame.height + 20).isActive = true
         leftView.widthAnchor.constraint(equalToConstant: 5).isActive = true
         leftView.centerYAnchor.constraint(equalTo: cutVideo.centerYAnchor).isActive = true
         
         rightView.rightAnchor.constraint(equalTo: cutVideo.rightAnchor).isActive = true
-        rightView.heightAnchor.constraint(equalToConstant: self.frame.height).isActive = true
+        rightView.heightAnchor.constraint(equalToConstant: self.frame.height + 20).isActive = true
         rightView.widthAnchor.constraint(equalToConstant: 5).isActive = true
         rightView.centerYAnchor.constraint(equalTo: cutVideo.centerYAnchor).isActive = true
         

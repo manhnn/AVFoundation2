@@ -188,6 +188,7 @@
                         <constraint firstAttribute="height" constant="30" id="hJD-bo-WHu"/>
                         <constraint firstAttribute="width" secondItem="EF0-No-qql" secondAttribute="height" multiplier="2:1" id="i0w-k3-lWj"/>
                     </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                     <state key="normal" title="Save">
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>

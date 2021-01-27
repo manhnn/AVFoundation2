@@ -21,7 +21,7 @@ class PlayVideoViewController: UIViewController {
     @IBOutlet weak var trimButton: UIButton!
     
     var cutAudioView: CutVideoView!
-    var composition: AVMutableComposition!
+    var mutableComposition: AVMutableComposition!
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
     
@@ -175,7 +175,7 @@ class PlayVideoViewController: UIViewController {
         self.navigationView.alpha = 1
         self.videoView.alpha = 1
         
-        self.settingComposition()
+        self.buildComposition()
         self.updatePlayerItem()
     }
     
@@ -219,15 +219,15 @@ class PlayVideoViewController: UIViewController {
         self.videoView.alpha = 0.1
     }
     
-    func settingComposition() {
-        self.composition = AVMutableComposition()
+    func buildComposition() {
+        self.mutableComposition = AVMutableComposition()
         
         let originAsset = AVAsset(url: url! as URL)
         let originVideoTracks = originAsset.tracks
         
         let trimRange = currentTrimRange()
         originVideoTracks.forEach { (originVideoTrack) in
-            let track = self.composition.addMutableTrack(withMediaType: originVideoTrack.mediaType, preferredTrackID: originVideoTrack.trackID)
+            let track = self.mutableComposition.addMutableTrack(withMediaType: originVideoTrack.mediaType, preferredTrackID: originVideoTrack.trackID)
             try? track?.insertTimeRange(CMTimeRange(start: trimRange.start + originVideoTrack.timeRange.start, duration: trimRange.duration), of: originVideoTrack, at: .zero)
         }
     }
@@ -244,7 +244,7 @@ class PlayVideoViewController: UIViewController {
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
         }
         
-        let playerItem = AVPlayerItem(asset: self.composition)
+        let playerItem = AVPlayerItem(asset: self.mutableComposition)
         self.player.replaceCurrentItem(with: playerItem)
         durationTimeLabel.text = getTimeString(from: player.currentItem!.duration)
         
