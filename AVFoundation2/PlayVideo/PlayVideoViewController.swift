@@ -21,7 +21,7 @@ class PlayVideoViewController: UIViewController {
     @IBOutlet weak var trimButton: UIButton!
     @IBOutlet weak var musicButton: UIButton!
     
-    var cutAudioView: ThumbnailCutVideoView!
+    var cutVideoView: ThumbnailCutVideoView!
     var mutableComposition: AVMutableComposition!
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
@@ -168,7 +168,7 @@ class PlayVideoViewController: UIViewController {
     
     @IBAction func saveVideoButtonAction(_ sender: Any) {
         saveVideoButton.isHidden = true
-        cutAudioView.isHidden = true
+        cutVideoView.isHidden = true
         trimButton.isHidden = false
         
         self.sliderView.isUserInteractionEnabled = true
@@ -218,10 +218,14 @@ class PlayVideoViewController: UIViewController {
         }
         let trackCompositionz = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
         try? trackCompositionz?.insertTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: originAsset.duration), of: originVideo!.tracks(withMediaType: .video).first!, at: .zero)
-        let playerItem = AVPlayerItem(asset: self.mutableComposition)
         
-        playerItem.audioTimePitchAlgorithm = .spectral
+        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
+    }
+    
+    @IBAction func filterVideo(_ sender: Any) {
+        
     }
     
     
@@ -232,15 +236,15 @@ class PlayVideoViewController: UIViewController {
         trimButton.isHidden = true
         
         // Add CutAudioView
-        cutAudioView = ThumbnailCutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: url!)!)
-        cutAudioView.backgroundColor = .clear
-        cutAudioView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(cutAudioView)
+        cutVideoView = ThumbnailCutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: url!)!)
+        cutVideoView.backgroundColor = .clear
+        cutVideoView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(cutVideoView)
 
-        cutAudioView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 40).isActive = true
-        cutAudioView.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -40).isActive = true
-        cutAudioView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 100).isActive = true
-        cutAudioView.heightAnchor.constraint(equalToConstant: 62).isActive = true
+        cutVideoView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 40).isActive = true
+        cutVideoView.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -40).isActive = true
+        cutVideoView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 100).isActive = true
+        cutVideoView.heightAnchor.constraint(equalToConstant: 62).isActive = true
 
         // updown alpha
         self.sliderView.isUserInteractionEnabled = false
@@ -265,8 +269,8 @@ class PlayVideoViewController: UIViewController {
     }
     
     private func currentTrimRange() -> CMTimeRange {
-        let startTime = CGFloat(cutAudioView.leftStartTime)
-        let endTime = CGFloat(cutAudioView.rightEndTime)
+        let startTime = CGFloat(cutVideoView.leftStartTime)
+        let endTime = CGFloat(cutVideoView.rightEndTime)
         let duration = player.currentItem?.duration.seconds
         return CMTimeRange(start: CMTime(value: CMTimeValue(startTime * CGFloat(duration!) * 1000), timescale: 1000), end: CMTime(value: CMTimeValue(endTime * CGFloat(duration!) * 1000), timescale: 1000))
     }
@@ -277,6 +281,7 @@ class PlayVideoViewController: UIViewController {
         }
         
         let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem.audioTimePitchAlgorithm = .varispeed
         self.player.replaceCurrentItem(with: playerItem)
         durationTimeLabel.text = getTimeString(from: player.currentItem!.duration)
         

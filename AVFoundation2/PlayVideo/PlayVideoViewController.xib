@@ -208,6 +208,17 @@
                         <action selector="addMusicForVideoButtonAction:" destination="-1" eventType="touchUpInside" id="Hr7-oS-D6Y"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hfD-VV-sIi">
+                    <rect key="frame" x="60" y="44" width="30" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="30" id="8KQ-sj-6xg"/>
+                        <constraint firstAttribute="height" constant="30" id="Kmc-Yf-88w"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="filter"/>
+                    <connections>
+                        <action selector="filterVideo:" destination="-1" eventType="touchUpInside" id="3If-AB-t4e"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -215,11 +226,13 @@
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="T0B-qk-rt4" secondAttribute="trailing" id="0uY-bw-Sl0"/>
                 <constraint firstItem="fIn-1m-034" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="3FQ-d1-DKI"/>
                 <constraint firstItem="EF0-No-qql" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="3av-J1-VkS"/>
+                <constraint firstItem="hfD-VV-sIi" firstAttribute="leading" secondItem="q2o-uO-lx2" secondAttribute="trailing" constant="30" id="6T3-Ue-V2U"/>
                 <constraint firstItem="T0B-qk-rt4" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" multiplier="0.05" id="ASf-cM-Li7"/>
                 <constraint firstItem="EF0-No-qql" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="JV6-wx-v3A"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="Mfd-cO-8w5"/>
                 <constraint firstItem="q2o-uO-lx2" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="O7P-7Z-3Rc"/>
                 <constraint firstItem="uNl-yO-pBp" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="SZe-gb-DJb"/>
+                <constraint firstItem="hfD-VV-sIi" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="TGU-Dw-ZAP"/>
                 <constraint firstItem="q2o-uO-lx2" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Vyk-J7-Wao"/>
                 <constraint firstItem="uNl-yO-pBp" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="X0Q-vW-UO2"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Ygo-aQ-QcU"/>
@@ -235,6 +248,7 @@
     </objects>
     <resources>
         <image name="cut" width="512" height="512"/>
+        <image name="filter" width="512" height="512"/>
         <image name="full-screen" width="512" height="512"/>
         <image name="loop" width="512" height="512"/>
         <image name="music" width="512" height="512"/>
