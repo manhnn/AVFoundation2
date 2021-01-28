@@ -27,7 +27,10 @@ class PlayVideoViewController: UIViewController {
     var playerLayer: AVPlayerLayer!
     var originVideo: AVAsset?
     
-    var url: URL?
+    let musicString = Bundle.main.path(forResource: "SampleAudio1", ofType: "mp3")!
+    let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
+    var urlVideo: URL?
+    var urlAudio: URL?
     var isVideoPlaying = false
     var isZoomVideo = false
     var listRate: [Float] = [1, 1.25, 1.5, 1.75, 2, 0.25, 0.5, 0.75]
@@ -38,9 +41,8 @@ class PlayVideoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
-        url = URL(fileURLWithPath: videoString)
-        player = AVPlayer(url: url!)
+        urlVideo = URL(fileURLWithPath: videoString)
+        player = AVPlayer(url: urlVideo!)
         player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
         addTimeObserver()
         playerLayer = AVPlayerLayer(player: player)
@@ -186,7 +188,7 @@ class PlayVideoViewController: UIViewController {
             let asset = AVURLAsset(url: path , options: nil)
             let imgGenerator = AVAssetImageGenerator(asset: asset)
             imgGenerator.appliesPreferredTrackTransform = true
-            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 2, timescale: 1), actualTime: nil)
+            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 2, timescale: 10), actualTime: nil)
             let thumbnail = UIImage(cgImage: cgImage)
 
             return thumbnail
@@ -199,15 +201,15 @@ class PlayVideoViewController: UIViewController {
     
     // MARK: - Add music
     @IBAction func addMusicForVideoButtonAction(_ sender: UIButton) {
-        let musicString = Bundle.main.path(forResource: "SampleAudio1", ofType: "mp3")!
+        
         self.mutableComposition = AVMutableComposition()
-        url = URL(fileURLWithPath: musicString)
-        let originAsset = AVAsset(url: url!)
+        urlAudio = URL(fileURLWithPath: musicString)
+        let originAsset = AVAsset(url: urlAudio!)
         let originVideoTracks = originAsset.tracks
         
-        let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
-        let url2 = URL(fileURLWithPath: videoString)
-        originVideo = AVAsset(url: url2)
+        
+        urlVideo = URL(fileURLWithPath: videoString)
+        originVideo = AVAsset(url: urlVideo!)
         
         originVideoTracks.forEach { (track) in
             if track.mediaType == .audio {
@@ -227,28 +229,28 @@ class PlayVideoViewController: UIViewController {
     @IBAction func filterVideo(_ sender: Any) {
         let filter = CIFilter(name: "CIGaussianBlur")!
         
-        let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
-        url = URL(fileURLWithPath: videoString)
-        let originAsset = AVAsset(url: url!)
+        urlVideo = URL(fileURLWithPath: videoString)
+        let originAsset = AVAsset(url: urlVideo!)
         
-        let composition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
+        let videoComposition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
 
-          // Clamp to avoid blurring transparent pixels at the image edges
+            // Clamp to avoid blurring transparent pixels at the image edges
             let source = request.sourceImage.clampedToExtent()
-          filter.setValue(source, forKey: kCIInputImageKey)
+            filter.setValue(source, forKey: kCIInputImageKey)
 
-          // Vary filter parameters based on video timing
-          let seconds = CMTimeGetSeconds(request.compositionTime)
-            filter.setValue(seconds * 0.5, forKey: kCIInputRadiusKey)
+            // Vary filter parameters based on video timing
+            let seconds = CMTimeGetSeconds(request.compositionTime)
+            filter.setValue(seconds * 0.25, forKey: kCIInputRadiusKey)
 
-          // Crop the blurred output to the bounds of the original image
+            // Crop the blurred output to the bounds of the original image
             let output = filter.outputImage!.cropped(to: request.sourceImage.extent)
 
-          // Provide the filter output to the composition
-          request.finish(with: output, context: nil)
+            // Provide the filter output to the composition
+            request.finish(with: output, context: nil)
         })
+        
         let playerItem = AVPlayerItem(asset: self.mutableComposition)
-        playerItem.videoComposition = composition
+        playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
     }
@@ -261,7 +263,7 @@ class PlayVideoViewController: UIViewController {
         trimButton.isHidden = true
         
         // Add CutAudioView
-        cutVideoView = ThumbnailCutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: url!)!)
+        cutVideoView = ThumbnailCutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: urlVideo!)!)
         cutVideoView.backgroundColor = .clear
         cutVideoView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(cutVideoView)
@@ -282,7 +284,7 @@ class PlayVideoViewController: UIViewController {
     func buildComposition() {
         self.mutableComposition = AVMutableComposition()
         
-        originVideo = AVAsset(url: url! as URL)
+        originVideo = AVAsset(url: urlVideo! as URL)
         let originVideoTracks = originVideo!.tracks
         
         let trimRange = currentTrimRange()
