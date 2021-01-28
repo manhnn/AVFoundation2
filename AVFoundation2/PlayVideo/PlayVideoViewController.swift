@@ -25,6 +25,7 @@ class PlayVideoViewController: UIViewController {
     var mutableComposition: AVMutableComposition!
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
+    var playerItem: AVPlayerItem!
     var originVideo: AVAsset?
     
     let musicString = Bundle.main.path(forResource: "SampleAudio1", ofType: "mp3")!
@@ -45,6 +46,8 @@ class PlayVideoViewController: UIViewController {
         urlVideo = URL(fileURLWithPath: videoString)
         player = AVPlayer(url: urlVideo!)
         player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
+        playerItem = player.currentItem
+        mutableComposition = AVMutableComposition()
         addTimeObserver()
         playerLayer = AVPlayerLayer(player: player)
         playerLayer.videoGravity = .resizeAspect
@@ -203,9 +206,8 @@ class PlayVideoViewController: UIViewController {
     // MARK: - Add music
     @IBAction func addMusicForVideoButtonAction(_ sender: UIButton) {
         
-        self.mutableComposition = AVMutableComposition()
-        let originAsset = AVAsset(url: urlAudio!)
-        let originVideoTracks = originAsset.tracks
+        let originAudio = AVAsset(url: urlAudio!)
+        let originVideoTracks = originAudio.tracks
         
         originVideo = AVAsset(url: urlVideo!)
         
@@ -217,9 +219,9 @@ class PlayVideoViewController: UIViewController {
             }
         }
         let trackCompositionz = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
-        try? trackCompositionz?.insertTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: originAsset.duration), of: originVideo!.tracks(withMediaType: .video).first!, at: .zero)
+        try? trackCompositionz?.insertTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: originAudio.duration), of: originVideo!.tracks(withMediaType: .video).first!, at: .zero)
         
-        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem = AVPlayerItem(asset: self.mutableComposition)
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
     }
@@ -246,7 +248,7 @@ class PlayVideoViewController: UIViewController {
             request.finish(with: output, context: nil)
         })
       
-        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        //let playerItem = AVPlayerItem(asset: self.mutableComposition) chi can thay doi thuoc tinh videoComsition chu ko can khoi tao item moi
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
@@ -274,7 +276,7 @@ class PlayVideoViewController: UIViewController {
             request.finish(with: output!, context: nil)
         })
         
-        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        //let playerItem = AVPlayerItem(asset: self.mutableComposition) chi can thay doi thuoc tinh videoComposition chu ko can khoi tao lai item moi
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
@@ -299,14 +301,15 @@ class PlayVideoViewController: UIViewController {
             request.finish(with: output!, context: nil)
         })
         
-        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        //let playerItem = AVPlayerItem(asset: self.mutableComposition) chi can thay doi thuoc tinh videoCompositon chu ko can khoi tao lai item moi
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
     }
     
     @IBAction func filterVideo4(_ sender: Any) {
-        let filter = CIFilter(name: "CILinearToSRGBToneCurve")
+        //let filter = CIFilter(name: "CILinearToSRGBToneCurve") // mau sang
+        let filter = CIFilter(name: "CIPhotoEffectMono") // mau den trang
         let originAsset = AVAsset(url: urlVideo!)
         
         let videoComposition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: {request in
@@ -318,7 +321,7 @@ class PlayVideoViewController: UIViewController {
             request.finish(with: output!, context: nil)
         })
         
-        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        //let playerItem = AVPlayerItem(asset: self.mutableComposition) chi can thay doi thuoc tinh videoComposition chu ko can khoi tao lai item moi
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
@@ -377,10 +380,10 @@ class PlayVideoViewController: UIViewController {
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
         }
         
-        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem = AVPlayerItem(asset: self.mutableComposition)
         playerItem.audioTimePitchAlgorithm = .varispeed
         self.player.replaceCurrentItem(with: playerItem)
-        durationTimeLabel.text = getTimeString(from: player.currentItem!.duration)
+        durationTimeLabel.text = getTimeString(from: playerItem.duration)
         
         NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidPlayToEndTime(_:)), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
     }
