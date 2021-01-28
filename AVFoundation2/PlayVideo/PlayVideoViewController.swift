@@ -41,6 +41,7 @@ class PlayVideoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        urlAudio = URL(fileURLWithPath: musicString)
         urlVideo = URL(fileURLWithPath: videoString)
         player = AVPlayer(url: urlVideo!)
         player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
@@ -203,12 +204,9 @@ class PlayVideoViewController: UIViewController {
     @IBAction func addMusicForVideoButtonAction(_ sender: UIButton) {
         
         self.mutableComposition = AVMutableComposition()
-        urlAudio = URL(fileURLWithPath: musicString)
         let originAsset = AVAsset(url: urlAudio!)
         let originVideoTracks = originAsset.tracks
         
-        
-        urlVideo = URL(fileURLWithPath: videoString)
         originVideo = AVAsset(url: urlVideo!)
         
         originVideoTracks.forEach { (track) in
@@ -226,12 +224,11 @@ class PlayVideoViewController: UIViewController {
         player.replaceCurrentItem(with: playerItem)
     }
     
-    @IBAction func filterVideo(_ sender: Any) {
+    @IBAction func filterVideo(_ sender: UIButton) {
+        
         let filter = CIFilter(name: "CIGaussianBlur")!
-        
-        urlVideo = URL(fileURLWithPath: videoString)
         let originAsset = AVAsset(url: urlVideo!)
-        
+
         let videoComposition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
 
             // Clamp to avoid blurring transparent pixels at the image edges
@@ -248,12 +245,85 @@ class PlayVideoViewController: UIViewController {
             // Provide the filter output to the composition
             request.finish(with: output, context: nil)
         })
+      
+        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem.videoComposition = videoComposition
+        playerItem.audioTimePitchAlgorithm = .varispeed
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
+    @IBAction func filterVideo2(_ sender: Any) {
+        let filter = CIFilter(name: "CIBumpDistortion")
+        let originAsset = AVAsset(url: urlVideo!)
+        
+        let videoComposition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
+            
+            let source = request.sourceImage.clampedToExtent()
+            filter?.setValue(source, forKey: kCIInputImageKey)
+            
+            let inputCenter = CIVector(values: [150, 150], count: 2)
+            filter?.setValue(inputCenter, forKey: "inputCenter")
+            
+            let inputRadius = NSNumber(value: 200)
+            filter?.setValue(inputRadius, forKey: "inputRadius")
+            
+            let inputScale = NSNumber(value: 0.5)
+            filter?.setValue(inputScale, forKey: "inputScale")
+            
+            let output = filter?.outputImage?.cropped(to: request.sourceImage.extent)
+            request.finish(with: output!, context: nil)
+        })
         
         let playerItem = AVPlayerItem(asset: self.mutableComposition)
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
     }
+    
+    @IBAction func filterVideo3(_ sender: Any) {
+        let filter = CIFilter(name: "CIColorClamp")
+        let originAsset = AVAsset(url: urlVideo!)
+        
+        let videoComposition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: {request in
+            
+            let source = request.sourceImage.clampedToExtent()
+            filter?.setValue(source, forKey: kCIInputImageKey)
+            
+            let inputMinComponents = CIVector(x: 0.55, y: 0.15, z: 0.1, w: 1)
+            filter?.setValue(inputMinComponents, forKey: "inputMinComponents")
+            
+            let inputMaxComponents = CIVector(x: 1, y: 1, z: 1, w: 1)
+            filter?.setValue(inputMaxComponents, forKey: "inputMaxComponents")
+            
+            let output = filter?.outputImage?.cropped(to: request.sourceImage.extent)
+            request.finish(with: output!, context: nil)
+        })
+        
+        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem.videoComposition = videoComposition
+        playerItem.audioTimePitchAlgorithm = .varispeed
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
+    @IBAction func filterVideo4(_ sender: Any) {
+        let filter = CIFilter(name: "CILinearToSRGBToneCurve")
+        let originAsset = AVAsset(url: urlVideo!)
+        
+        let videoComposition = AVVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: {request in
+            
+            let source = request.sourceImage.clampedToExtent()
+            filter?.setValue(source, forKey: kCIInputImageKey)
+            
+            let output = filter?.outputImage?.cropped(to: request.sourceImage.extent)
+            request.finish(with: output!, context: nil)
+        })
+        
+        let playerItem = AVPlayerItem(asset: self.mutableComposition)
+        playerItem.videoComposition = videoComposition
+        playerItem.audioTimePitchAlgorithm = .varispeed
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
     
     
     // MARK: - Trim video
