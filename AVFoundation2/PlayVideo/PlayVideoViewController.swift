@@ -400,7 +400,7 @@ class PlayVideoViewController: UIViewController {
         let videoComposition = AVMutableVideoComposition()
         
         let compositionLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-                compositionLayerInstruction.setTransform(rotationLayerInstruction(transform: transform, alpha: .pi * 3 / 2), at: .zero)
+                compositionLayerInstruction.setTransform(rotationLayerInstruction(transform: transform, alpha: .pi), at: .zero)
         
         let instruction = AVMutableVideoCompositionInstruction.init()
         instruction.timeRange = CMTimeRangeMake(start: .zero, duration: mutableComposition.duration)
@@ -417,7 +417,14 @@ class PlayVideoViewController: UIViewController {
     
     func rotationLayerInstruction(transform: CGAffineTransform, alpha: CGFloat) -> CGAffineTransform {
         let scale = mutableComposition.naturalSize.height / mutableComposition.naturalSize.width
-        return transform.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width * scale, y: mutableComposition.naturalSize.width / 2 - mutableComposition.naturalSize.height / 2 * scale).scaledBy(x: scale, y: scale)
+        if alpha == .pi * (3 / 2) {
+            return transform.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width * scale, y: mutableComposition.naturalSize.width / 2 - mutableComposition.naturalSize.height / 2 * scale).scaledBy(x: scale, y: scale)
+        }
+        else if alpha == .pi {
+            return transform.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width, y: -mutableComposition.naturalSize.height).scaledBy(x: 1, y: 1)
+        }
+        //else alpha == .pi * (1 / 2)
+        return transform.rotated(by: alpha).translatedBy(x: 0, y: -mutableComposition.naturalSize.width * scale).scaledBy(x: scale, y: scale)
     }
     // Note Rtation
 //    -add các track vào mutalbleComposition(như cắt vs add nhạc)
