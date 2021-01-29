@@ -27,6 +27,7 @@ class PlayVideoViewController: UIViewController {
     var playerLayer: AVPlayerLayer!
     var playerItem: AVPlayerItem!
     var originVideo: AVAsset?
+    var videoComposition: AVVideoComposition!
     
     let musicString = Bundle.main.path(forResource: "SampleAudio1", ofType: "mp3")!
     let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
@@ -45,6 +46,7 @@ class PlayVideoViewController: UIViewController {
         urlAudio = URL(fileURLWithPath: musicString)
         urlVideo = URL(fileURLWithPath: videoString)
         player = AVPlayer(url: urlVideo!)
+        originVideo = AVAsset(url: urlVideo!)
         player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
         playerItem = player.currentItem
         mutableComposition = AVMutableComposition()
@@ -119,16 +121,6 @@ class PlayVideoViewController: UIViewController {
         if newTime < CMTimeGetSeconds(duration) - 5.0 {
             let time: CMTime = CMTimeMake(value: Int64(newTime * 1000), timescale: 1000)
             player.seek(to: time)
-        }
-    }
-    
-    @IBAction func zoomVideo(_ sender: Any) {
-        isZoomVideo = !isZoomVideo
-        if isZoomVideo {
-            playerLayer.videoGravity = .resizeAspectFill
-        }
-        else {
-            playerLayer.videoGravity = .resizeAspect
         }
     }
     
@@ -209,7 +201,7 @@ class PlayVideoViewController: UIViewController {
         let originAudio = AVAsset(url: urlAudio!)
         let originVideoTracks = originAudio.tracks
         
-        originVideo = AVAsset(url: urlVideo!)
+        //originVideo = AVAsset(url: urlVideo!)
         
         originVideoTracks.forEach { (track) in
             if track.mediaType == .audio {
@@ -226,6 +218,7 @@ class PlayVideoViewController: UIViewController {
         player.replaceCurrentItem(with: playerItem)
     }
     
+    // MARK: - Filter Video
     @IBAction func filterVideo(_ sender: UIButton) {
         
         let filter = CIFilter(name: "CIGaussianBlur")!
@@ -355,8 +348,6 @@ class PlayVideoViewController: UIViewController {
     }
     
     func buildComposition() {
-        self.mutableComposition = AVMutableComposition()
-        
         originVideo = AVAsset(url: urlVideo! as URL)
         let originVideoTracks = originVideo!.tracks
         
@@ -392,6 +383,47 @@ class PlayVideoViewController: UIViewController {
         self.player.pause()
         self.player.seek(to: CMTime.zero, toleranceBefore: .zero, toleranceAfter: .zero)
     }
+    
+    // MARK: - Rotate Video
+    @IBAction func rotateVideo(_ sender: Any) {
+        var transform: CGAffineTransform!
+        self.mutableComposition = AVMutableComposition()
+        
+        originVideo!.tracks.forEach { track in
+            let trackComposition = self.mutableComposition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: kCMPersistentTrackID_Invalid)
+            try? trackComposition?.insertTimeRange(track.timeRange, of: track, at: .zero)
+            trackComposition?.preferredTransform = track.preferredTransform
+            
+            transform = trackComposition?.preferredTransform
+        }
+        
+        let videoComposition = AVMutableVideoComposition()
+        
+        let compositionLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
+                compositionLayerInstruction.setTransform(rotationLayerInstruction(transform: transform, alpha: .pi * 3 / 2), at: .zero)
+        
+        let instruction = AVMutableVideoCompositionInstruction.init()
+        instruction.timeRange = CMTimeRangeMake(start: .zero, duration: mutableComposition.duration)
+        instruction.layerInstructions = [compositionLayerInstruction]
+        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+        videoComposition.instructions = [instruction]
+        videoComposition.renderSize = mutableComposition.naturalSize
+        
+        self.videoComposition = videoComposition
+        playerItem = AVPlayerItem(asset: mutableComposition)
+        playerItem.videoComposition = videoComposition
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
+    func rotationLayerInstruction(transform: CGAffineTransform, alpha: CGFloat) -> CGAffineTransform {
+        let scale = mutableComposition.naturalSize.height / mutableComposition.naturalSize.width
+        return transform.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width * scale, y: mutableComposition.naturalSize.width / 2 - mutableComposition.naturalSize.height / 2 * scale).scaledBy(x: scale, y: scale)
+    }
+    // Note Rtation
+//    -add các track vào mutalbleComposition(như cắt vs add nhạc)
+//    -rồi dùng layerInstruction có hàm setTransform để chuyển động, translate hay rotation(đang để là .pi/2).
+    //-Config Layer Instruction
+//    -rồi replace lại item
 }
 
 

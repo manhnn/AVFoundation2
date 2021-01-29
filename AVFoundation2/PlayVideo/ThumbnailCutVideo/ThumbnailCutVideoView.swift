@@ -17,7 +17,7 @@ class ThumbnailCutVideoView: UIView {
     public var rightView: UIView!
     public var leftLabel: UILabel!
     public var rightLabel: UILabel!
-    public var cutVideo: ThumbnailCutVideo!
+    public var thumbnailCutVideo: ThumbnailCutVideo!
     
     public var leftStartTime: Float!
     public var rightEndTime: Float!
@@ -44,14 +44,14 @@ class ThumbnailCutVideoView: UIView {
             imageView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         }
         
-        cutVideo = ThumbnailCutVideo(frame: self.frame)
-        cutVideo.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(cutVideo)
+        thumbnailCutVideo = ThumbnailCutVideo(frame: self.frame)
+        thumbnailCutVideo.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(thumbnailCutVideo)
         
-        leftConstraint = cutVideo.leftAnchor.constraint(equalTo: self.leftAnchor)
-        rightConstraint = self.rightAnchor.constraint(equalTo: cutVideo.rightAnchor)
-        bottomConstraint = self.bottomAnchor.constraint(equalTo: cutVideo.bottomAnchor)
-        topConstraint = cutVideo.topAnchor.constraint(equalTo: self.topAnchor)
+        leftConstraint = thumbnailCutVideo.leftAnchor.constraint(equalTo: self.leftAnchor)
+        rightConstraint = self.rightAnchor.constraint(equalTo: thumbnailCutVideo.rightAnchor)
+        bottomConstraint = self.bottomAnchor.constraint(equalTo: thumbnailCutVideo.bottomAnchor)
+        topConstraint = thumbnailCutVideo.topAnchor.constraint(equalTo: self.topAnchor)
 
         leftConstraint?.isActive = true
         rightConstraint?.isActive = true
@@ -72,15 +72,15 @@ class ThumbnailCutVideoView: UIView {
         self.addSubview(leftView)
         self.addSubview(rightView)
         
-        leftView.leftAnchor.constraint(equalTo: cutVideo.leftAnchor).isActive = true
+        leftView.leftAnchor.constraint(equalTo: thumbnailCutVideo.leftAnchor).isActive = true
         leftView.heightAnchor.constraint(equalToConstant: self.frame.height + 20).isActive = true
         leftView.widthAnchor.constraint(equalToConstant: 5).isActive = true
-        leftView.centerYAnchor.constraint(equalTo: cutVideo.centerYAnchor).isActive = true
+        leftView.centerYAnchor.constraint(equalTo: thumbnailCutVideo.centerYAnchor).isActive = true
         
-        rightView.rightAnchor.constraint(equalTo: cutVideo.rightAnchor).isActive = true
+        rightView.rightAnchor.constraint(equalTo: thumbnailCutVideo.rightAnchor).isActive = true
         rightView.heightAnchor.constraint(equalToConstant: self.frame.height + 20).isActive = true
         rightView.widthAnchor.constraint(equalToConstant: 5).isActive = true
-        rightView.centerYAnchor.constraint(equalTo: cutVideo.centerYAnchor).isActive = true
+        rightView.centerYAnchor.constraint(equalTo: thumbnailCutVideo.centerYAnchor).isActive = true
         
         let leftPan = UIPanGestureRecognizer(target: self, action: #selector(self.leftPanGesture(_: )))
         leftView.addGestureRecognizer(leftPan)
@@ -111,7 +111,7 @@ class ThumbnailCutVideoView: UIView {
         let panGesture = sender as! UIPanGestureRecognizer
         let point = panGesture.location(in: self)
         let distance = point.x
-        leftConstraint?.constant = (distance >= 0) ? distance : cutVideo.frame.minX
+        leftConstraint?.constant = (distance >= 0) ? distance : thumbnailCutVideo.frame.minX
         leftStartTime = Float(leftConstraint!.constant / frame.width)
         leftLabel.text = String(format: "%.0f", leftStartTime * 100) + "%"
     }

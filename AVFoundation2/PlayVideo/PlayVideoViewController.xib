@@ -27,12 +27,10 @@
             <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="uNl-yO-pBp">
+                <view contentMode="scaleAspectFit" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uNl-yO-pBp">
                     <rect key="frame" x="0.0" y="82.666666666666686" width="428" height="760.66666666666652"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="width" secondItem="uNl-yO-pBp" secondAttribute="height" multiplier="9:16" id="Aw5-cX-5xo"/>
-                    </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fPj-8q-qm9">
                     <rect key="frame" x="0.0" y="845.66666666666663" width="428" height="46.333333333333371"/>
@@ -69,7 +67,7 @@
                             <color key="tintColor" systemColor="systemBlueColor"/>
                             <state key="normal" backgroundImage="full-screen"/>
                             <connections>
-                                <action selector="zoomVideo:" destination="-1" eventType="touchUpInside" id="zvh-Ft-gyG"/>
+                                <action selector="rotateVideo:" destination="-1" eventType="touchUpInside" id="zvh-Ft-gyG"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oOz-ag-gZe">
@@ -265,14 +263,11 @@
                 <constraint firstItem="TWC-oi-QiI" firstAttribute="leading" secondItem="hfD-VV-sIi" secondAttribute="trailing" constant="10" id="MHF-Xi-KVZ"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="Mfd-cO-8w5"/>
                 <constraint firstItem="q2o-uO-lx2" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="O7P-7Z-3Rc"/>
-                <constraint firstItem="uNl-yO-pBp" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="SZe-gb-DJb"/>
                 <constraint firstItem="hfD-VV-sIi" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="TGU-Dw-ZAP"/>
                 <constraint firstItem="RuX-XK-cWM" firstAttribute="leading" secondItem="kKN-91-Wxe" secondAttribute="trailing" constant="10" id="Vof-1W-IkW"/>
                 <constraint firstItem="q2o-uO-lx2" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Vyk-J7-Wao"/>
-                <constraint firstItem="uNl-yO-pBp" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="X0Q-vW-UO2"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Ygo-aQ-QcU"/>
                 <constraint firstItem="kKN-91-Wxe" firstAttribute="leading" secondItem="TWC-oi-QiI" secondAttribute="trailing" constant="10" id="bpF-na-93g"/>
-                <constraint firstItem="uNl-yO-pBp" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="gFv-2Q-gIU"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="top" secondItem="T0B-qk-rt4" secondAttribute="bottom" id="iaw-Cj-Bou"/>
                 <constraint firstItem="kKN-91-Wxe" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="qAH-ZR-B1k"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="fPj-8q-qm9" secondAttribute="trailing" id="tSk-FC-CXn"/>
