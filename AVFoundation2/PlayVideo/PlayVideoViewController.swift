@@ -394,10 +394,33 @@ class PlayVideoViewController: UIViewController {
         
         let videoComposition = AVMutableVideoComposition()
         
+        // input alpha from UI
+        let alpha: CGFloat = .pi * (3 / 2)
+        
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-        let transform1 = CGAffineTransform(translationX: mutableComposition.naturalSize.width, y: mutableComposition.naturalSize.height)
-        let transform2 = transform1.rotated(by: .pi)
-        transformer.setTransform(transform2, at: .zero)
+        let transform1: CGAffineTransform
+        let transform2: CGAffineTransform
+        
+        let scale = mutableComposition.naturalSize.height / mutableComposition.naturalSize.width
+        
+        // rotation alpha = PI
+        if alpha == .pi {
+            transform1 = CGAffineTransform(translationX: mutableComposition.naturalSize.width, y: mutableComposition.naturalSize.height)
+            transform2 = transform1.rotated(by: alpha).scaledBy(x: 1, y: 1)
+            transformer.setTransform(transform2, at: .zero)
+        }
+        // rotation alpha = PI / 2
+        else if alpha == .pi * (1 / 2) {
+            transform1 = CGAffineTransform(translationX: mutableComposition.naturalSize.width * scale, y: 0)
+            transform2 = transform1.rotated(by: alpha).scaledBy(x: scale, y: scale)
+            transformer.setTransform(transform2, at: .zero)
+        }
+        // rotation alpha = 3 PI / 2
+        else {
+            transform1 = CGAffineTransform(translationX: mutableComposition.naturalSize.height / 2 * scale, y: mutableComposition.naturalSize.width * scale)
+            transform2 = transform1.rotated(by: alpha).scaledBy(x: scale, y: scale)
+            transformer.setTransform((transform2), at: .zero)
+        }
         
         let instruction = AVMutableVideoCompositionInstruction.init()
         instruction.timeRange = CMTimeRangeMake(start: .zero, duration: mutableComposition.duration)
@@ -410,25 +433,14 @@ class PlayVideoViewController: UIViewController {
         playerItem = AVPlayerItem(asset: mutableComposition)
         playerItem.videoComposition = videoComposition
         player.replaceCurrentItem(with: playerItem)
+        
+        // Note Rtation
+        //    -add các track vào mutalbleComposition(như cắt vs add nhạc)
+        //    -rồi dùng layerInstruction có hàm setTransform để chuyển động, translate hay rotation(đang để là .pi/2).
+        //    -Config Layer Instruction
+        //    -gan lai videoComposition
+        //    -rồi replace lại item
     }
-    
-    func rotationLayerInstruction(transformer: CGAffineTransform, alpha: CGFloat) -> CGAffineTransform {
-        let scale = mutableComposition.naturalSize.height / mutableComposition.naturalSize.width
-        if alpha == .pi * (3 / 2) {
-            return transformer.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width * scale, y: mutableComposition.naturalSize.width / 2 - mutableComposition.naturalSize.height / 2 * scale).scaledBy(x: scale, y: scale)
-        }
-        else if alpha == .pi {
-            return transformer.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width, y: -mutableComposition.naturalSize.height).scaledBy(x: 1, y: 1)
-        }
-        //else alpha == .pi * (1 / 2)
-        return transformer.rotated(by: alpha).translatedBy(x: 0, y: -mutableComposition.naturalSize.width * scale).scaledBy(x: scale, y: scale)
-    }
-// Note Rtation
-//    -add các track vào mutalbleComposition(như cắt vs add nhạc)
-//    -rồi dùng layerInstruction có hàm setTransform để chuyển động, translate hay rotation(đang để là .pi/2).
-//    -Config Layer Instruction
-//    -gan lai videoComposition
-//    -rồi replace lại item
     
     @IBAction func cropVideo(_ sender: Any) {
         let clipVideoTrack = (originVideo?.tracks(withMediaType: AVMediaType.video).first!)! as AVAssetTrack
