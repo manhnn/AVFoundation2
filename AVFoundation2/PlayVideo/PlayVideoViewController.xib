@@ -250,6 +250,17 @@
                         <action selector="filterVideo4:" destination="-1" eventType="touchUpInside" id="3gL-0z-rxB"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hur-sJ-ru6">
+                    <rect key="frame" x="378" y="44" width="20" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="20" id="gAI-GX-C8J"/>
+                        <constraint firstAttribute="height" constant="20" id="jbr-TA-PcB"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="crop"/>
+                    <connections>
+                        <action selector="cropVideo:" destination="-1" eventType="touchUpInside" id="jbI-Vc-zgA"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -263,9 +274,11 @@
                 <constraint firstItem="TWC-oi-QiI" firstAttribute="leading" secondItem="hfD-VV-sIi" secondAttribute="trailing" constant="10" id="MHF-Xi-KVZ"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="Mfd-cO-8w5"/>
                 <constraint firstItem="q2o-uO-lx2" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="O7P-7Z-3Rc"/>
+                <constraint firstItem="fIn-1m-034" firstAttribute="leading" secondItem="hur-sJ-ru6" secondAttribute="trailing" constant="10" id="OLi-ZZ-I69"/>
                 <constraint firstItem="hfD-VV-sIi" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="TGU-Dw-ZAP"/>
                 <constraint firstItem="RuX-XK-cWM" firstAttribute="leading" secondItem="kKN-91-Wxe" secondAttribute="trailing" constant="10" id="Vof-1W-IkW"/>
                 <constraint firstItem="q2o-uO-lx2" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Vyk-J7-Wao"/>
+                <constraint firstItem="hur-sJ-ru6" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="WsQ-tr-xM8"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Ygo-aQ-QcU"/>
                 <constraint firstItem="kKN-91-Wxe" firstAttribute="leading" secondItem="TWC-oi-QiI" secondAttribute="trailing" constant="10" id="bpF-na-93g"/>
                 <constraint firstItem="fPj-8q-qm9" firstAttribute="top" secondItem="T0B-qk-rt4" secondAttribute="bottom" id="iaw-Cj-Bou"/>
@@ -281,6 +294,7 @@
         </view>
     </objects>
     <resources>
+        <image name="crop" width="512" height="512"/>
         <image name="cut" width="512" height="512"/>
         <image name="filter" width="512" height="512"/>
         <image name="full-screen" width="512" height="512"/>

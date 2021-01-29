@@ -62,9 +62,9 @@
             filePath = "AVFoundation2/PlayVideo/PlayVideoViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "427"
-            endingLineNumber = "427"
-            landmarkName = "rotationLayerInstruction(transform:alpha:)"
+            startingLineNumber = "424"
+            endingLineNumber = "424"
+            landmarkName = "rotationLayerInstruction(transformer:alpha:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

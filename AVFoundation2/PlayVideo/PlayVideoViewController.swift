@@ -320,8 +320,6 @@ class PlayVideoViewController: UIViewController {
         player.replaceCurrentItem(with: playerItem)
     }
     
-    
-    
     // MARK: - Trim video
     @IBAction func trimVideoButton(_ sender: Any) {
         
@@ -386,25 +384,24 @@ class PlayVideoViewController: UIViewController {
     
     // MARK: - Rotate Video
     @IBAction func rotateVideo(_ sender: Any) {
-        var transform: CGAffineTransform!
         self.mutableComposition = AVMutableComposition()
         
         originVideo!.tracks.forEach { track in
             let trackComposition = self.mutableComposition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: kCMPersistentTrackID_Invalid)
             try? trackComposition?.insertTimeRange(track.timeRange, of: track, at: .zero)
             trackComposition?.preferredTransform = track.preferredTransform
-            
-            transform = trackComposition?.preferredTransform
         }
         
         let videoComposition = AVMutableVideoComposition()
         
-        let compositionLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-                compositionLayerInstruction.setTransform(rotationLayerInstruction(transform: transform, alpha: .pi), at: .zero)
+        let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
+        let transform1 = CGAffineTransform(translationX: mutableComposition.naturalSize.width, y: mutableComposition.naturalSize.height)
+        let transform2 = transform1.rotated(by: .pi)
+        transformer.setTransform(transform2, at: .zero)
         
         let instruction = AVMutableVideoCompositionInstruction.init()
         instruction.timeRange = CMTimeRangeMake(start: .zero, duration: mutableComposition.duration)
-        instruction.layerInstructions = [compositionLayerInstruction]
+        instruction.layerInstructions = [transformer]
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         videoComposition.instructions = [instruction]
         videoComposition.renderSize = mutableComposition.naturalSize
@@ -415,22 +412,38 @@ class PlayVideoViewController: UIViewController {
         player.replaceCurrentItem(with: playerItem)
     }
     
-    func rotationLayerInstruction(transform: CGAffineTransform, alpha: CGFloat) -> CGAffineTransform {
+    func rotationLayerInstruction(transformer: CGAffineTransform, alpha: CGFloat) -> CGAffineTransform {
         let scale = mutableComposition.naturalSize.height / mutableComposition.naturalSize.width
         if alpha == .pi * (3 / 2) {
-            return transform.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width * scale, y: mutableComposition.naturalSize.width / 2 - mutableComposition.naturalSize.height / 2 * scale).scaledBy(x: scale, y: scale)
+            return transformer.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width * scale, y: mutableComposition.naturalSize.width / 2 - mutableComposition.naturalSize.height / 2 * scale).scaledBy(x: scale, y: scale)
         }
         else if alpha == .pi {
-            return transform.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width, y: -mutableComposition.naturalSize.height).scaledBy(x: 1, y: 1)
+            return transformer.rotated(by: alpha).translatedBy(x: -mutableComposition.naturalSize.width, y: -mutableComposition.naturalSize.height).scaledBy(x: 1, y: 1)
         }
         //else alpha == .pi * (1 / 2)
-        return transform.rotated(by: alpha).translatedBy(x: 0, y: -mutableComposition.naturalSize.width * scale).scaledBy(x: scale, y: scale)
+        return transformer.rotated(by: alpha).translatedBy(x: 0, y: -mutableComposition.naturalSize.width * scale).scaledBy(x: scale, y: scale)
     }
-    // Note Rtation
+// Note Rtation
 //    -add các track vào mutalbleComposition(như cắt vs add nhạc)
 //    -rồi dùng layerInstruction có hàm setTransform để chuyển động, translate hay rotation(đang để là .pi/2).
-    //-Config Layer Instruction
+//    -Config Layer Instruction
+//    -gan lai videoComposition
 //    -rồi replace lại item
+    
+    @IBAction func cropVideo(_ sender: Any) {
+        let clipVideoTrack = (originVideo?.tracks(withMediaType: AVMediaType.video).first!)! as AVAssetTrack
+        
+        let videoComposition = AVMutableVideoComposition()
+        videoComposition.renderSize = CGSize(width: clipVideoTrack.naturalSize.width, height: clipVideoTrack.naturalSize.height)
+        videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
+        
+        let instruction = AVMutableVideoCompositionInstruction()
+        instruction.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: CMTimeMakeWithSeconds(10, preferredTimescale: 30) )
+
+        //instruction.layerInstructions = [transformer]
+        //videoComposition.instructions = [instruction]
+    }
+    
 }
 
 
