@@ -446,11 +446,12 @@ class PlayVideoViewController: UIViewController {
     
     // MARK: - Crop Video
     @IBAction func cropVideo(_ sender: Any) {
-        cropvideo1()
-        //cropVideo2()
+        //cropvideoTranslatedThenUpdateRenderSize()
+        //cropVideoCropRectangle()
+        cropVideoByFilterCICrop()
     }
     
-    func cropvideo1() {
+    func cropvideoTranslatedThenUpdateRenderSize() {
         //var layerInstruction = AVMutableVideoCompositionLayerInstruction()
         
         self.mutableComposition = AVMutableComposition()
@@ -486,7 +487,7 @@ class PlayVideoViewController: UIViewController {
         player.replaceCurrentItem(with: playerItem)
     }
     
-    func cropVideo2() {
+    func cropVideoCropRectangle() {
         self.mutableComposition = AVMutableComposition()
         
         originVideo!.tracks.forEach { track in
@@ -508,6 +509,27 @@ class PlayVideoViewController: UIViewController {
         videoComposition.instructions = [instruction]
         
         playerItem.videoComposition = videoComposition
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
+    func cropVideoByFilterCICrop() {
+        let filter = CIFilter(name: "CICrop")
+        let originAsset = AVAsset(url: urlVideo!)
+        
+        let videoComposition = AVMutableVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
+            
+            let source = request.sourceImage.clampedToExtent()
+            filter?.setValue(source, forKey: kCIInputImageKey)
+            
+            let inputRectangle = CIVector(cgRect: CGRect(x: 0, y: 0, width: 200, height: 100))
+            filter?.setValue(inputRectangle, forKey: "inputRectangle")
+            
+            let output = filter?.outputImage?.cropped(to: request.sourceImage.extent)
+            request.finish(with: output!, context: nil)
+        })
+        
+        playerItem.videoComposition = videoComposition
+        playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
     }
 }
