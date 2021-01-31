@@ -18,6 +18,7 @@
 		257DFFE825BEB554008576D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257DFFE725BEB554008576D4 /* AppDelegate.swift */; };
 		257DFFF125BEB555008576D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 257DFFF025BEB555008576D4 /* Assets.xcassets */; };
 		257DFFF425BEB555008576D4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 257DFFF225BEB555008576D4 /* LaunchScreen.storyboard */; };
+		258C499625C707A2002246BE /* SampleVideo2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 258C499525C707A2002246BE /* SampleVideo2.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		257DFFF025BEB555008576D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		257DFFF325BEB555008576D4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		257DFFF525BEB555008576D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		258C499525C707A2002246BE /* SampleVideo2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = SampleVideo2.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				257D000725BEB942008576D4 /* SampleVideo1.mp4 */,
+				258C499525C707A2002246BE /* SampleVideo2.mp4 */,
 			);
 			path = SampleVideo;
 			sourceTree = "<group>";
@@ -185,6 +188,7 @@
 				253A7D8B25C1574800319B38 /* SampleAudio1.mp3 in Resources */,
 				257D000F25BEC345008576D4 /* RecordAudioViewController.xib in Resources */,
 				257DFFF125BEB555008576D4 /* Assets.xcassets in Resources */,
+				258C499625C707A2002246BE /* SampleVideo2.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

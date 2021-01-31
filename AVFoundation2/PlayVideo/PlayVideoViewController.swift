@@ -52,7 +52,7 @@ class PlayVideoViewController: UIViewController {
         mutableComposition = AVMutableComposition()
         addTimeObserver()
         playerLayer = AVPlayerLayer(player: player)
-        playerLayer.videoGravity = .resizeAspect
+        playerLayer.videoGravity = .resizeAspectFill
         videoView.layer.addSublayer(playerLayer)
     }
     
@@ -94,7 +94,7 @@ class PlayVideoViewController: UIViewController {
     }
     
     
-    // MARK: - Button Action Video
+    // MARK: - Button Controller Video
     @IBAction func playPressed(_ sender: UIButton) {
         if isVideoPlaying {
             player.pause()
@@ -466,7 +466,7 @@ class PlayVideoViewController: UIViewController {
             
         }
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-        let transform1 = CGAffineTransform(translationX: 100, y: 100)
+        let transform1 = CGAffineTransform(translationX: -100, y: -100)
         transformer.setTransform(transform1, at: .zero)
         
         let videoComposition = AVMutableVideoComposition()
@@ -480,7 +480,7 @@ class PlayVideoViewController: UIViewController {
         //instruction.layerInstructions = [layerInstruction]
         videoComposition.instructions = [instruction]
         
-        videoComposition.renderSize = CGSize(width: 1, height: 2)
+        videoComposition.renderSize = CGSize(width: 1, height: 1)
         
         playerItem = AVPlayerItem(asset: mutableComposition)
         playerItem.videoComposition = videoComposition
@@ -498,14 +498,14 @@ class PlayVideoViewController: UIViewController {
         let videoComposition = AVMutableVideoComposition(propertiesOf: mutableComposition)
                 
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-         transformer.setCropRectangle(CGRect(x: 100, y: 100, width: 200, height: 200), at: .zero)
+         transformer.setCropRectangle(CGRect(x: 100, y: 100, width: 100, height: 100), at: .zero)
         //transformer.setCropRectangleRamp(fromStartCropRectangle: CGRect(x: 100, y: 100, width: 100, height: 100), toEndCropRectangle: CGRect(x: 200, y: 200, width: 200, height: 200), timeRange: CMTimeRange(start: .zero, duration: CMTime(seconds: 10, preferredTimescale: 600)))
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(start: .zero, duration: mutableComposition.duration)
         instruction.layerInstructions = [transformer]
         
-        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+        //videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         videoComposition.instructions = [instruction]
         
         playerItem.videoComposition = videoComposition
@@ -521,16 +521,23 @@ class PlayVideoViewController: UIViewController {
             let source = request.sourceImage.clampedToExtent()
             filter?.setValue(source, forKey: kCIInputImageKey)
             
-            let inputRectangle = CIVector(cgRect: CGRect(x: 0, y: 0, width: 200, height: 100))
+            let inputRectangle = CIVector(cgRect: CGRect(x: 10, y: 10, width: 200, height: 100))
             filter?.setValue(inputRectangle, forKey: "inputRectangle")
             
             let output = filter?.outputImage?.cropped(to: request.sourceImage.extent)
             request.finish(with: output!, context: nil)
         })
-        
+        videoComposition.renderSize = CGSize(width: 200, height: 100)
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
+        //playerLayer.videoGravity = .resize
+    
+    }
+    
+    // MARK: - Merger Video
+    @IBAction func mergerVideo(_ sender: Any) {
+        
     }
 }
 
