@@ -555,24 +555,34 @@ class PlayVideoViewController: UIViewController {
         self.mutableComposition = AVMutableComposition()
         
         guard let firstTrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
-        do { try firstTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo!.duration), of: originVideo!.tracks[0], at: .zero)
+        do { try firstTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo!.duration), of: originVideo!.tracks(withMediaType: .video)[0], at: .zero)
         } catch {
             print("Failed to load first track")
             return
         }
         
         guard let secondtrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
-        do { try secondtrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo2!.duration), of: originVideo2!.tracks[0], at: originVideo!.duration)
+        do { try secondtrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo2!.duration), of: originVideo2!.tracks(withMediaType: .video)[0], at: originVideo!.duration)
         }
         catch {
             print("Failed to load second track")
             return
         }
         
-        if let loadedAudioAsset = originAudio {
+        if let loadedAudioAsset1 = originVideo {
             let audioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 0)
             do {
-            try audioTrack?.insertTimeRange(CMTimeRangeMake(start: .zero, duration: CMTimeAdd(originVideo!.duration, originVideo2!.duration)), of: loadedAudioAsset.tracks(withMediaType: .audio)[0], at: .zero)
+                try audioTrack?.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo!.duration), of: loadedAudioAsset1.tracks(withMediaType: .audio)[0], at: .zero)
+            }
+            catch {
+                print("Failed to load Audio track")
+            }
+        }
+        
+        if let loadedAudioAsset2 = originVideo2 {
+            let audioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 0)
+            do {
+                try audioTrack?.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo2!.duration), of: loadedAudioAsset2.tracks(withMediaType: .audio)[0], at: originVideo!.duration)
             }
             catch {
                 print("Failed to load Audio track")
@@ -584,7 +594,7 @@ class PlayVideoViewController: UIViewController {
         
         let firstInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[0])
         firstInstruction.setOpacity(0.0, at: originVideo!.duration)
-        let transform1 = firstTrack.preferredTransform.concatenating(CGAffineTransform.init(translationX: 0, y: 0))
+        let transform1 = firstTrack.preferredTransform.concatenating(CGAffineTransform.init(translationX: 1, y: 0))
         firstInstruction.setTransform(transform1, at: .zero)
         
         let secondInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[1])
