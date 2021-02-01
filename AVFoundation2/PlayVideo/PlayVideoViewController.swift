@@ -100,6 +100,13 @@ class PlayVideoViewController: UIViewController {
         }
     }
     
+    func showAlert(title: String, message: String) {
+        let alertView = UIAlertController(title:title, message:message, preferredStyle: .alert)
+        let defaultAction = UIAlertAction(title: NSLocalizedString("OK",comment:"OK"), style: .default, handler: nil)
+        alertView.addAction(defaultAction)
+        self.present(alertView, animated: true, completion: nil)
+    }
+    
     
     // MARK: - Button Controller Video
     @IBAction func playPressed(_ sender: UIButton) {
@@ -454,8 +461,8 @@ class PlayVideoViewController: UIViewController {
     // MARK: - Crop Video
     @IBAction func cropVideo(_ sender: Any) {
         //cropvideoTranslatedThenUpdateRenderSize()
-        //cropVideoCropRectangle()
-        cropVideoByFilterCICrop()
+        cropVideoCropRectangle()
+        //cropVideoByFilterCICrop()
     }
     
     func cropvideoTranslatedThenUpdateRenderSize() {
@@ -487,7 +494,7 @@ class PlayVideoViewController: UIViewController {
         //instruction.layerInstructions = [layerInstruction]
         videoComposition.instructions = [instruction]
         
-        videoComposition.renderSize = CGSize(width: 1, height: 1)
+        videoComposition.renderSize = CGSize(width: mutableComposition.naturalSize.width, height: mutableComposition.naturalSize.height)
         
         playerItem = AVPlayerItem(asset: mutableComposition)
         playerItem.videoComposition = videoComposition
@@ -514,6 +521,7 @@ class PlayVideoViewController: UIViewController {
         
         //videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         videoComposition.instructions = [instruction]
+        videoComposition.renderSize = CGSize(width: mutableComposition.naturalSize.width, height: mutableComposition.naturalSize.height)
         
         playerItem.videoComposition = videoComposition
         player.replaceCurrentItem(with: playerItem)
@@ -534,46 +542,69 @@ class PlayVideoViewController: UIViewController {
             let output = filter?.outputImage?.cropped(to: request.sourceImage.extent)
             request.finish(with: output!, context: nil)
         })
+        
         videoComposition.renderSize = CGSize(width: 200, height: 100)
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
         //playerLayer.videoGravity = .resize
-    
     }
     
-    // MARK: - Merger Video
+    // MARK: - Merge Video
     @IBAction func mergerVideo(_ sender: Any) {
         self.mutableComposition = AVMutableComposition()
         
         guard let firstTrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
-        do { try firstTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo!.duration), of: originVideo!.tracks(withMediaType: AVMediaType.video)[0], at: .zero)
+        do { try firstTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo!.duration), of: originVideo!.tracks[0], at: .zero)
         } catch {
             print("Failed to load first track")
             return
         }
         
         guard let secondtrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
-        do { try secondtrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo2!.duration), of: originVideo2!.tracks(withMediaType: AVMediaType.video)[0], at: originVideo!.duration)
+        do { try secondtrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo2!.duration), of: originVideo2!.tracks[0], at: originVideo!.duration)
         }
         catch {
             print("Failed to load second track")
             return
         }
         
-        let audioTrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: 0)
-        do {
-            try audioTrack?.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: CMTimeAdd(originVideo!.duration, originVideo2!.duration)), of: originAudio!.tracks(withMediaType: AVMediaType.audio)[0], at: CMTime.zero)
-        }
-        catch {
-            print("Failed to load Audio track")
+        if let loadedAudioAsset = originAudio {
+            let audioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 0)
+            do {
+            try audioTrack?.insertTimeRange(CMTimeRangeMake(start: .zero, duration: CMTimeAdd(originVideo!.duration, originVideo2!.duration)), of: loadedAudioAsset.tracks(withMediaType: .audio)[0], at: .zero)
+            }
+            catch {
+                print("Failed to load Audio track")
+            }
         }
         
-    
+        let mainInstruction = AVMutableVideoCompositionInstruction()
+        mainInstruction.timeRange = CMTimeRangeMake(start: .zero, duration: CMTimeAdd(originVideo!.duration, originVideo2!.duration))
+        
+        let firstInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[0])
+        firstInstruction.setOpacity(0.0, at: originVideo!.duration)
+        let transform1 = firstTrack.preferredTransform.concatenating(CGAffineTransform.init(translationX: 0, y: 0))
+        firstInstruction.setTransform(transform1, at: .zero)
+        
+        let secondInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[1])
+        let transform2 = CGAffineTransform(translationX: 1, y: 0).scaledBy(x: 1 / 6, y: 2 / 9)
+        secondInstruction.setTransform(transform2, at: originVideo!.duration)
+        
+        mainInstruction.layerInstructions = [firstInstruction, secondInstruction]
+        
+        let videoComposition = AVMutableVideoComposition()
+        videoComposition.instructions = [mainInstruction]
+        videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
+        videoComposition.renderSize = CGSize(width: firstTrack.naturalSize.width, height: firstTrack.naturalSize.height)
+
+        
+        self.showAlert(title: NSLocalizedString("Done!", comment: "Done!"), message: NSLocalizedString("Videos have been merged", comment: "Video merge success message"))
+        
+        durationTimeLabel.text = self.getTimeString(from: mutableComposition.duration)
         playerItem = AVPlayerItem(asset: mutableComposition)
         playerItem.videoComposition = videoComposition
         player.replaceCurrentItem(with: playerItem)
     }
-
 }
 

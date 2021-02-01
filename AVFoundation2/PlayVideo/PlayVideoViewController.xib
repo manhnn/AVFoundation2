@@ -150,7 +150,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="gZq-Ps-YUh">
-                            <rect key="frame" x="82.333333333333343" y="8.3333333333332575" width="263.33333333333326" height="31"/>
+                            <rect key="frame" x="77.333333333333343" y="8.3333333333332575" width="273.33333333333326" height="31"/>
                             <connections>
                                 <action selector="sliderValueChanged:" destination="-1" eventType="valueChanged" id="MLa-fM-UY7"/>
                             </connections>
@@ -159,7 +159,7 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="WqM-h8-8I4" firstAttribute="leading" secondItem="T0B-qk-rt4" secondAttribute="leading" constant="10" id="BfG-kB-sgN"/>
-                        <constraint firstItem="gZq-Ps-YUh" firstAttribute="leading" secondItem="WqM-h8-8I4" secondAttribute="trailing" constant="10" id="HJe-qn-zTU"/>
+                        <constraint firstItem="gZq-Ps-YUh" firstAttribute="leading" secondItem="WqM-h8-8I4" secondAttribute="trailing" constant="5" id="HJe-qn-zTU"/>
                         <constraint firstItem="WqM-h8-8I4" firstAttribute="width" secondItem="T0B-qk-rt4" secondAttribute="width" multiplier="0.15" id="KYR-nr-Sc1"/>
                         <constraint firstItem="WqM-h8-8I4" firstAttribute="height" secondItem="T0B-qk-rt4" secondAttribute="height" multiplier="0.5" id="VUM-Qc-gbM"/>
                         <constraint firstItem="ceA-vK-gca" firstAttribute="width" secondItem="T0B-qk-rt4" secondAttribute="width" multiplier="0.15" id="cLM-Y4-E7R"/>
@@ -168,7 +168,7 @@
                         <constraint firstItem="ceA-vK-gca" firstAttribute="height" secondItem="T0B-qk-rt4" secondAttribute="height" multiplier="0.5" id="gOy-wt-sg4"/>
                         <constraint firstItem="ceA-vK-gca" firstAttribute="centerY" secondItem="T0B-qk-rt4" secondAttribute="centerY" id="h5r-O4-qfj"/>
                         <constraint firstItem="WqM-h8-8I4" firstAttribute="centerY" secondItem="T0B-qk-rt4" secondAttribute="centerY" id="m9I-H0-FU4"/>
-                        <constraint firstItem="ceA-vK-gca" firstAttribute="leading" secondItem="gZq-Ps-YUh" secondAttribute="trailing" constant="10" id="qkF-tP-uuu"/>
+                        <constraint firstItem="ceA-vK-gca" firstAttribute="leading" secondItem="gZq-Ps-YUh" secondAttribute="trailing" constant="5" id="qkF-tP-uuu"/>
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fIn-1m-034">
