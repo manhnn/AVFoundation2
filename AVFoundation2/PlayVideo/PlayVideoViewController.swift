@@ -27,11 +27,15 @@ class PlayVideoViewController: UIViewController {
     var playerLayer: AVPlayerLayer!
     var playerItem: AVPlayerItem!
     var originVideo: AVAsset?
+    var originVideo2: AVAsset?
+    var originAudio: AVAsset?
     var videoComposition: AVVideoComposition!
     
     let musicString = Bundle.main.path(forResource: "SampleAudio1", ofType: "mp3")!
     let videoString = Bundle.main.path(forResource: "SampleVideo1", ofType: "mp4")!
+    let videoString2 = Bundle.main.path(forResource: "SampleVideo2", ofType: "mp4")!
     var urlVideo: URL?
+    var urlVideo2: URL?
     var urlAudio: URL?
     var isVideoPlaying = false
     var isZoomVideo = false
@@ -45,8 +49,11 @@ class PlayVideoViewController: UIViewController {
         
         urlAudio = URL(fileURLWithPath: musicString)
         urlVideo = URL(fileURLWithPath: videoString)
+        urlVideo2 = URL(fileURLWithPath: videoString2)
         player = AVPlayer(url: urlVideo!)
         originVideo = AVAsset(url: urlVideo!)
+        originVideo2 = AVAsset(url: urlVideo2!)
+        originAudio = AVAsset(url: urlAudio!)
         player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
         playerItem = player.currentItem
         mutableComposition = AVMutableComposition()
@@ -537,9 +544,36 @@ class PlayVideoViewController: UIViewController {
     
     // MARK: - Merger Video
     @IBAction func mergerVideo(_ sender: Any) {
+        self.mutableComposition = AVMutableComposition()
         
+        guard let firstTrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
+        do { try firstTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo!.duration), of: originVideo!.tracks(withMediaType: AVMediaType.video)[0], at: .zero)
+        } catch {
+            print("Failed to load first track")
+            return
+        }
+        
+        guard let secondtrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
+        do { try secondtrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originVideo2!.duration), of: originVideo2!.tracks(withMediaType: AVMediaType.video)[0], at: originVideo!.duration)
+        }
+        catch {
+            print("Failed to load second track")
+            return
+        }
+        
+        let audioTrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: 0)
+        do {
+            try audioTrack?.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: CMTimeAdd(originVideo!.duration, originVideo2!.duration)), of: originAudio!.tracks(withMediaType: AVMediaType.audio)[0], at: CMTime.zero)
+        }
+        catch {
+            print("Failed to load Audio track")
+        }
+        
+    
+        playerItem = AVPlayerItem(asset: mutableComposition)
+        playerItem.videoComposition = videoComposition
+        player.replaceCurrentItem(with: playerItem)
     }
+
 }
-
-
 

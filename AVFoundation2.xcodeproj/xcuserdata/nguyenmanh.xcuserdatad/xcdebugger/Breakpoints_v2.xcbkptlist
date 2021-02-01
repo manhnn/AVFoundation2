@@ -14,13 +14,13 @@
             filePath = "AVFoundation2/PlayVideo/PlayVideoViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "206"
-            endingLineNumber = "206"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
             landmarkName = "addMusicForVideoButtonAction(_:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "79916D1F-1280-452E-BC3E-D94DB3109C86 - 23f35fd1bd7abeb7"
+                  uuid = "79916D1F-1280-452E-BC3E-D94DB3109C86 - 23f35fd1bd7abd0a"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -30,12 +30,12 @@
                   urlString = "file:///Users/nguyenmanh/Documents/Learn_iOS_Solar/AVFoundation2/AVFoundation2/PlayVideo/PlayVideoViewController.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "206"
-                  endingLineNumber = "206"
+                  startingLineNumber = "211"
+                  endingLineNumber = "211"
                   offsetFromSymbolStart = "644">
                </Location>
                <Location
-                  uuid = "79916D1F-1280-452E-BC3E-D94DB3109C86 - ffe33f54d4ecf96b"
+                  uuid = "79916D1F-1280-452E-BC3E-D94DB3109C86 - ffe33f54d4ecfa14"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -45,8 +45,8 @@
                   urlString = "file:///Users/nguyenmanh/Documents/Learn_iOS_Solar/AVFoundation2/AVFoundation2/PlayVideo/PlayVideoViewController.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "207"
-                  endingLineNumber = "207"
+                  startingLineNumber = "212"
+                  endingLineNumber = "212"
                   offsetFromSymbolStart = "80">
                </Location>
             </Locations>
