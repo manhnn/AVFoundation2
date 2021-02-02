@@ -59,7 +59,7 @@ class PlayVideoViewController: UIViewController {
         mutableComposition = AVMutableComposition()
         addTimeObserver()
         playerLayer = AVPlayerLayer(player: player)
-        playerLayer.videoGravity = .resizeAspectFill
+        playerLayer.videoGravity = .resizeAspect
         videoView.layer.addSublayer(playerLayer)
     }
     
@@ -410,7 +410,7 @@ class PlayVideoViewController: UIViewController {
         let videoComposition = AVMutableVideoComposition()
         
         // fix input alpha rotation from UI
-        let alpha: CGFloat = .pi
+        let alpha: CGFloat = .pi * (1 / 2)
         
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
         let transform1: CGAffineTransform
@@ -450,7 +450,7 @@ class PlayVideoViewController: UIViewController {
         playerItem.videoComposition = videoComposition
         player.replaceCurrentItem(with: playerItem)
         
-        // Note Rtation
+        // Note Rotation
         //    -add các track vào mutalbleComposition(như cắt vs add nhạc)
         //    -rồi dùng layerInstruction có hàm setTransform để di chuyển, translate hay rotation(đang để là .pi/2).
         //    -Config Layer Instruction
@@ -474,7 +474,7 @@ class PlayVideoViewController: UIViewController {
             trackComposition?.preferredTransform = track.preferredTransform
         }
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-        let transform1 = CGAffineTransform(translationX: 100, y: 0)
+        let transform1 = CGAffineTransform(translationX: -100, y: -100)
         transformer.setTransform(transform1, at: .zero)
         
         let videoComposition = AVMutableVideoComposition()
@@ -487,7 +487,7 @@ class PlayVideoViewController: UIViewController {
         instruction.layerInstructions = [transformer]
         videoComposition.instructions = [instruction]
         
-        videoComposition.renderSize = CGSize(width: videoView.frame.width, height: videoView.frame.height)
+        videoComposition.renderSize = CGSize(width: 220, height: 140)
         
         playerItem = AVPlayerItem(asset: mutableComposition)
         playerItem.videoComposition = videoComposition
@@ -505,9 +505,7 @@ class PlayVideoViewController: UIViewController {
         let videoComposition = AVMutableVideoComposition(propertiesOf: mutableComposition)
                 
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-        transformer.setCropRectangle(CGRect(x: 100, y: 100, width: 100, height: 100), at: .zero)
-        let transform1 = CGAffineTransform(translationX: 0, y: 0)
-        transformer.setTransform(transform1, at: .zero)
+        transformer.setCropRectangle(CGRect(x: 10, y: 10, width: 100, height: 100), at: .zero)
         //transformer.setCropRectangleRamp(fromStartCropRectangle: CGRect(x: 100, y: 100, width: 100, height: 100), toEndCropRectangle: CGRect(x: 200, y: 200, width: 200, height: 200), timeRange: CMTimeRange(start: .zero, duration: CMTime(seconds: 10, preferredTimescale: 600)))
         
         let instruction = AVMutableVideoCompositionInstruction()
@@ -515,21 +513,21 @@ class PlayVideoViewController: UIViewController {
         instruction.layerInstructions = [transformer]
         
         videoComposition.instructions = [instruction]
-        videoComposition.renderSize = CGSize(width: mutableComposition.naturalSize.height, height: mutableComposition.naturalSize.height)
+        videoComposition.renderSize = CGSize(width: 100, height: 100)
         
         playerItem.videoComposition = videoComposition
         player.replaceCurrentItem(with: playerItem)
     }
     
     func cropVideoByFilterCICrop() {
-        let filter = CIFilter(name: "CICrop")
+        //let filter = CIFilter(name: "CICrop")
         let originAsset = AVAsset(url: urlVideo!)
         
         let videoComposition = AVMutableVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
             
             let source = request.sourceImage
             
-            let output = source.transformed(by: CGAffineTransform.init(translationX: -80, y: -50))
+            let output = source.transformed(by: CGAffineTransform.init(translationX: -80, y: -80))
             request.finish(with: output, context: nil)
         })
         

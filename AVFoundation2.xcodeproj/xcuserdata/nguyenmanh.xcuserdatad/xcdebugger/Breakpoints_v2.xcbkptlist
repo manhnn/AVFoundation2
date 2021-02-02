@@ -14,8 +14,8 @@
             filePath = "AVFoundation2/PlayVideo/PlayVideoViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "533"
-            endingLineNumber = "533"
+            startingLineNumber = "531"
+            endingLineNumber = "531"
             landmarkName = "cropVideoByFilterCICrop()"
             landmarkType = "7">
          </BreakpointContent>
