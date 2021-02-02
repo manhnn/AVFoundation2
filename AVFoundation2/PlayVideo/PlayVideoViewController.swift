@@ -590,15 +590,15 @@ class PlayVideoViewController: UIViewController {
         }
         
         let mainInstruction = AVMutableVideoCompositionInstruction()
-        mainInstruction.timeRange = CMTimeRangeMake(start: .zero, duration: CMTimeAdd(originVideo!.duration, originVideo2!.duration))
+        mainInstruction.timeRange = CMTimeRangeMake(start: .zero, duration: mutableComposition.duration)
         
         let firstInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[0])
         firstInstruction.setOpacity(0.0, at: originVideo!.duration)
-        let transform1 = firstTrack.preferredTransform.concatenating(CGAffineTransform.init(translationX: 1, y: 0))
+        let transform1 = firstTrack.preferredTransform.concatenating(CGAffineTransform.init(translationX: 0, y: 0))
         firstInstruction.setTransform(transform1, at: .zero)
         
         let secondInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[1])
-        let transform2 = CGAffineTransform(translationX: 1, y: 0).scaledBy(x: 1 / 6, y: 2 / 9)
+        let transform2 = CGAffineTransform(translationX: 0, y: 0).scaledBy(x: 1 / 6, y: 2 / 9)
         secondInstruction.setTransform(transform2, at: originVideo!.duration)
         
         mainInstruction.layerInstructions = [firstInstruction, secondInstruction]
@@ -611,10 +611,30 @@ class PlayVideoViewController: UIViewController {
         
         self.showAlert(title: NSLocalizedString("Done!", comment: "Done!"), message: NSLocalizedString("Videos have been merged", comment: "Video merge success message"))
         
+        // preview video after merge
         durationTimeLabel.text = self.getTimeString(from: mutableComposition.duration)
-        playerItem = AVPlayerItem(asset: mutableComposition)
-        playerItem.videoComposition = videoComposition
-        player.replaceCurrentItem(with: playerItem)
+//        playerItem = AVPlayerItem(asset: mutableComposition)
+//        playerItem.videoComposition = videoComposition
+//        player.replaceCurrentItem(with: playerItem)
+        
+        
+        // test exporter video url then replay
+        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let url = documentDirectory.appendingPathComponent("mergeVideo.mp4")
+
+        guard let exporter = AVAssetExportSession(asset: mutableComposition, presetName: AVAssetExportPresetHighestQuality) else { return }
+        exporter.outputURL = url
+        exporter.outputFileType = AVFileType.mp4
+        exporter.shouldOptimizeForNetworkUse = true
+        exporter.videoComposition = videoComposition
+        
+        player = AVPlayer(url: exporter.outputURL!)
+        player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
+        playerLayer = AVPlayerLayer(player: player)
+        playerLayer.videoGravity = .resizeAspectFill
+        videoView.layer.addSublayer(playerLayer)
+        addTimeObserver()
+        
     }
 }
 
