@@ -28,10 +28,10 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="uNl-yO-pBp">
-                    <rect key="frame" x="0.0" y="342.66666666666669" width="428" height="240.66666666666669"/>
+                    <rect key="frame" x="0.0" y="249" width="428" height="428"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="width" secondItem="uNl-yO-pBp" secondAttribute="height" multiplier="16:9" id="XLV-zC-dIr"/>
+                        <constraint firstAttribute="width" secondItem="uNl-yO-pBp" secondAttribute="height" multiplier="1:1" id="XLV-zC-dIr"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fPj-8q-qm9">

@@ -461,26 +461,20 @@ class PlayVideoViewController: UIViewController {
     // MARK: - Crop Video
     @IBAction func cropVideo(_ sender: Any) {
         //cropvideoTranslatedThenUpdateRenderSize()
-        cropVideoCropRectangle()
-        //cropVideoByFilterCICrop()
+        //cropVideoCropRectangle()
+        cropVideoByFilterCICrop()
     }
     
     func cropvideoTranslatedThenUpdateRenderSize() {
-        //var layerInstruction = AVMutableVideoCompositionLayerInstruction()
-        
         self.mutableComposition = AVMutableComposition()
         
         originVideo!.tracks.forEach { track in
             let trackComposition = self.mutableComposition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: kCMPersistentTrackID_Invalid)
             try? trackComposition?.insertTimeRange(track.timeRange, of: track, at: .zero)
             trackComposition?.preferredTransform = track.preferredTransform
-            
-            //layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
-            //layerInstruction.setCropRectangle(CGRect(x: 10, y: 10, width: 50, height: 50), at: .zero)
-            
         }
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-        let transform1 = CGAffineTransform(translationX: -100, y: -100)
+        let transform1 = CGAffineTransform(translationX: 100, y: 0)
         transformer.setTransform(transform1, at: .zero)
         
         let videoComposition = AVMutableVideoComposition()
@@ -491,10 +485,9 @@ class PlayVideoViewController: UIViewController {
         
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         instruction.layerInstructions = [transformer]
-        //instruction.layerInstructions = [layerInstruction]
         videoComposition.instructions = [instruction]
         
-        videoComposition.renderSize = CGSize(width: mutableComposition.naturalSize.width, height: mutableComposition.naturalSize.height)
+        videoComposition.renderSize = CGSize(width: videoView.frame.width, height: videoView.frame.height)
         
         playerItem = AVPlayerItem(asset: mutableComposition)
         playerItem.videoComposition = videoComposition
@@ -512,16 +505,17 @@ class PlayVideoViewController: UIViewController {
         let videoComposition = AVMutableVideoComposition(propertiesOf: mutableComposition)
                 
         let transformer = AVMutableVideoCompositionLayerInstruction.init(assetTrack: mutableComposition.tracks(withMediaType: .video).first!)
-         transformer.setCropRectangle(CGRect(x: 100, y: 100, width: 100, height: 100), at: .zero)
+        transformer.setCropRectangle(CGRect(x: 100, y: 100, width: 100, height: 100), at: .zero)
+        let transform1 = CGAffineTransform(translationX: 0, y: 0)
+        transformer.setTransform(transform1, at: .zero)
         //transformer.setCropRectangleRamp(fromStartCropRectangle: CGRect(x: 100, y: 100, width: 100, height: 100), toEndCropRectangle: CGRect(x: 200, y: 200, width: 200, height: 200), timeRange: CMTimeRange(start: .zero, duration: CMTime(seconds: 10, preferredTimescale: 600)))
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(start: .zero, duration: mutableComposition.duration)
         instruction.layerInstructions = [transformer]
         
-        //videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         videoComposition.instructions = [instruction]
-        videoComposition.renderSize = CGSize(width: mutableComposition.naturalSize.width, height: mutableComposition.naturalSize.height)
+        videoComposition.renderSize = CGSize(width: mutableComposition.naturalSize.height, height: mutableComposition.naturalSize.height)
         
         playerItem.videoComposition = videoComposition
         player.replaceCurrentItem(with: playerItem)
@@ -533,21 +527,18 @@ class PlayVideoViewController: UIViewController {
         
         let videoComposition = AVMutableVideoComposition(asset: originAsset, applyingCIFiltersWithHandler: { request in
             
-            let source = request.sourceImage.clampedToExtent()
-            filter?.setValue(source, forKey: kCIInputImageKey)
+            let source = request.sourceImage
             
-            let inputRectangle = CIVector(cgRect: CGRect(x: 10, y: 10, width: 200, height: 100))
-            filter?.setValue(inputRectangle, forKey: "inputRectangle")
-            
-            let output = filter?.outputImage?.cropped(to: request.sourceImage.extent)
-            request.finish(with: output!, context: nil)
+            let output = source.transformed(by: CGAffineTransform.init(translationX: -80, y: -50))
+            request.finish(with: output, context: nil)
         })
         
-        videoComposition.renderSize = CGSize(width: 200, height: 100)
+        videoComposition.renderSize = CGSize(width: 240, height: 160)
         playerItem.videoComposition = videoComposition
         playerItem.audioTimePitchAlgorithm = .varispeed
         player.replaceCurrentItem(with: playerItem)
-        //playerLayer.videoGravity = .resize
+        playerLayer.videoGravity = .resizeAspectFill
+        //playerLayer.frame = videoView.bounds
     }
     
     // MARK: - Merge Video
@@ -613,27 +604,27 @@ class PlayVideoViewController: UIViewController {
         
         // preview video after merge
         durationTimeLabel.text = self.getTimeString(from: mutableComposition.duration)
-//        playerItem = AVPlayerItem(asset: mutableComposition)
-//        playerItem.videoComposition = videoComposition
-//        player.replaceCurrentItem(with: playerItem)
+        playerItem = AVPlayerItem(asset: mutableComposition)
+        playerItem.videoComposition = videoComposition
+        player.replaceCurrentItem(with: playerItem)
         
         
         // test exporter video url then replay
-        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
-        let url = documentDirectory.appendingPathComponent("mergeVideo.mp4")
-
-        guard let exporter = AVAssetExportSession(asset: mutableComposition, presetName: AVAssetExportPresetHighestQuality) else { return }
-        exporter.outputURL = url
-        exporter.outputFileType = AVFileType.mp4
-        exporter.shouldOptimizeForNetworkUse = true
-        exporter.videoComposition = videoComposition
-        
-        player = AVPlayer(url: exporter.outputURL!)
-        player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
-        playerLayer = AVPlayerLayer(player: player)
-        playerLayer.videoGravity = .resizeAspectFill
-        videoView.layer.addSublayer(playerLayer)
-        addTimeObserver()
+//        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+//        let url = documentDirectory.appendingPathComponent("mergeVideo.mp4")
+//
+//        guard let exporter = AVAssetExportSession(asset: mutableComposition, presetName: AVAssetExportPresetHighestQuality) else { return }
+//        exporter.outputURL = url
+//        exporter.outputFileType = AVFileType.mp4
+//        exporter.shouldOptimizeForNetworkUse = true
+//        exporter.videoComposition = videoComposition
+//
+//        player = AVPlayer(url: exporter.outputURL!)
+//        player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
+//        playerLayer = AVPlayerLayer(player: player)
+//        playerLayer.videoGravity = .resizeAspectFill
+//        videoView.layer.addSublayer(playerLayer)
+//        addTimeObserver()
         
     }
 }
