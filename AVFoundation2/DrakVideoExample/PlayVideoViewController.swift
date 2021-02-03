@@ -209,6 +209,11 @@ class PlayVideoViewController: UIViewController {
         }
     }
     
+    @IBAction func changeLightMode(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    
     // MARK: - Add music
     @IBAction func addMusicForVideoButtonAction(_ sender: UIButton) {
         
@@ -461,8 +466,8 @@ class PlayVideoViewController: UIViewController {
     // MARK: - Crop Video
     @IBAction func cropVideo(_ sender: Any) {
         //cropvideoTranslatedThenUpdateRenderSize()
-        //cropVideoCropRectangle()
-        cropVideoByFilterCICrop()
+        cropVideoCropRectangle()
+        //cropVideoByFilterCICrop()
     }
     
     func cropvideoTranslatedThenUpdateRenderSize() {

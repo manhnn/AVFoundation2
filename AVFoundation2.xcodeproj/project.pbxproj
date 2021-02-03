@@ -11,6 +11,8 @@
 		253A7D8025C1011100319B38 /* ThumbnailCutVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253A7D7F25C1011100319B38 /* ThumbnailCutVideoView.swift */; };
 		253A7D8B25C1574800319B38 /* SampleAudio1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 253A7D8A25C1574800319B38 /* SampleAudio1.mp3 */; };
 		2550209725C94AD90010BD04 /* VideoExample1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 2550209625C94AD90010BD04 /* VideoExample1.mp4 */; };
+		2550209C25C94D190010BD04 /* WhiteVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2550209A25C94D190010BD04 /* WhiteVideoViewController.swift */; };
+		2550209D25C94D190010BD04 /* WhiteVideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2550209B25C94D190010BD04 /* WhiteVideoViewController.xib */; };
 		257D000225BEB6D9008576D4 /* PlayVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257D000025BEB6D9008576D4 /* PlayVideoViewController.swift */; };
 		257D000325BEB6D9008576D4 /* PlayVideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 257D000125BEB6D9008576D4 /* PlayVideoViewController.xib */; };
 		257D000825BEB942008576D4 /* SampleVideo1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 257D000725BEB942008576D4 /* SampleVideo1.mp4 */; };
@@ -27,6 +29,8 @@
 		253A7D7F25C1011100319B38 /* ThumbnailCutVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCutVideoView.swift; sourceTree = "<group>"; };
 		253A7D8A25C1574800319B38 /* SampleAudio1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = SampleAudio1.mp3; sourceTree = "<group>"; };
 		2550209625C94AD90010BD04 /* VideoExample1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = VideoExample1.mp4; sourceTree = "<group>"; };
+		2550209A25C94D190010BD04 /* WhiteVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhiteVideoViewController.swift; sourceTree = "<group>"; };
+		2550209B25C94D190010BD04 /* WhiteVideoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WhiteVideoViewController.xib; sourceTree = "<group>"; };
 		257D000025BEB6D9008576D4 /* PlayVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayVideoViewController.swift; sourceTree = "<group>"; };
 		257D000125BEB6D9008576D4 /* PlayVideoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlayVideoViewController.xib; sourceTree = "<group>"; };
 		257D000725BEB942008576D4 /* SampleVideo1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = SampleVideo1.mp4; sourceTree = "<group>"; };
@@ -66,6 +70,15 @@
 				253A7D8A25C1574800319B38 /* SampleAudio1.mp3 */,
 			);
 			path = SampleAudio;
+			sourceTree = "<group>";
+		};
+		2550209925C94BD10010BD04 /* WhiteVideoExample */ = {
+			isa = PBXGroup;
+			children = (
+				2550209A25C94D190010BD04 /* WhiteVideoViewController.swift */,
+				2550209B25C94D190010BD04 /* WhiteVideoViewController.xib */,
+			);
+			path = WhiteVideoExample;
 			sourceTree = "<group>";
 		};
 		257D000625BEB934008576D4 /* SampleVideo */ = {
@@ -108,7 +121,9 @@
 			children = (
 				253A7D8525C153EE00319B38 /* SampleAudio */,
 				257D000625BEB934008576D4 /* SampleVideo */,
+				253A7D7925C100E400319B38 /* ThumbnailCutVideo */,
 				257DFFFF25BEB6C4008576D4 /* DrakVideoExample */,
+				2550209925C94BD10010BD04 /* WhiteVideoExample */,
 				257D000B25BEC325008576D4 /* RecordAudio */,
 				257DFFE725BEB554008576D4 /* AppDelegate.swift */,
 				257DFFF025BEB555008576D4 /* Assets.xcassets */,
@@ -123,7 +138,6 @@
 			children = (
 				257D000025BEB6D9008576D4 /* PlayVideoViewController.swift */,
 				257D000125BEB6D9008576D4 /* PlayVideoViewController.xib */,
-				253A7D7925C100E400319B38 /* ThumbnailCutVideo */,
 			);
 			path = DrakVideoExample;
 			sourceTree = "<group>";
@@ -191,6 +205,7 @@
 				253A7D8B25C1574800319B38 /* SampleAudio1.mp3 in Resources */,
 				2550209725C94AD90010BD04 /* VideoExample1.mp4 in Resources */,
 				257D000F25BEC345008576D4 /* RecordAudioViewController.xib in Resources */,
+				2550209D25C94D190010BD04 /* WhiteVideoViewController.xib in Resources */,
 				257DFFF125BEB555008576D4 /* Assets.xcassets in Resources */,
 				258C499625C707A2002246BE /* SampleVideo2.mp4 in Resources */,
 			);
@@ -205,6 +220,7 @@
 			files = (
 				253A7D8025C1011100319B38 /* ThumbnailCutVideoView.swift in Sources */,
 				257D000E25BEC345008576D4 /* RecordAudioViewController.swift in Sources */,
+				2550209C25C94D190010BD04 /* WhiteVideoViewController.swift in Sources */,
 				257D000225BEB6D9008576D4 /* PlayVideoViewController.swift in Sources */,
 				257DFFE825BEB554008576D4 /* AppDelegate.swift in Sources */,
 				253A7D7B25C100F700319B38 /* ThumbnailCutVideo.swift in Sources */,
