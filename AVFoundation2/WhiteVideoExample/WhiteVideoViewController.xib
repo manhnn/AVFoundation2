@@ -214,6 +214,9 @@
                         <constraint firstAttribute="height" constant="25" id="zuP-rB-7f4"/>
                     </constraints>
                     <state key="normal" backgroundImage="music"/>
+                    <connections>
+                        <action selector="addMusicToVideoPressed:" destination="-1" eventType="touchUpInside" id="UKC-VE-YY6"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y4J-Dk-K3m">
                     <rect key="frame" x="45" y="44" width="25" height="25"/>
@@ -222,6 +225,9 @@
                         <constraint firstAttribute="height" constant="25" id="ygX-FA-FRU"/>
                     </constraints>
                     <state key="normal" backgroundImage="flipVertical"/>
+                    <connections>
+                        <action selector="flipVIdeoPressed:" destination="-1" eventType="touchUpInside" id="TMM-27-Pyv"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kbi-4r-MR1">
                     <rect key="frame" x="304" y="44" width="25" height="25"/>
@@ -241,6 +247,9 @@
                         <constraint firstAttribute="height" constant="25" id="Xco-zg-0SM"/>
                     </constraints>
                     <state key="normal" backgroundImage="merger"/>
+                    <connections>
+                        <action selector="mergeVideoPressed:" destination="-1" eventType="touchUpInside" id="x5a-nA-jBM"/>
+                    </connections>
                 </button>
                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ePd-24-hkB">
                     <rect key="frame" x="182" y="44" width="50" height="30"/>

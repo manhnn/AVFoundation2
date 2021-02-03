@@ -41,6 +41,8 @@ class WhiteVideoViewController: UIViewController {
     var playerItem: AVPlayerItem!
     var playerLayer: AVPlayerLayer!
     var originAssetVideo: AVAsset!
+    var originAssetVideo2: AVAsset!
+    var originAssetAudio: AVAsset!
     var mutableComposition: AVMutableComposition!
     
     var isPlayingVideo = false
@@ -56,12 +58,13 @@ class WhiteVideoViewController: UIViewController {
         
         setupVideoBeforePlay()
         updateTimeInSlider()
-        
     }
     
     func setupVideoBeforePlay() {
         mutableComposition = AVMutableComposition()
         originAssetVideo = AVAsset(url: URL(fileURLWithPath: Bundle.main.path(forResource: "VideoExample1", ofType: "mp4")!))
+        originAssetVideo2 = AVAsset(url: URL(fileURLWithPath: Bundle.main.path(forResource: "SampleVideo2", ofType: "mp4")!))
+        originAssetAudio = AVAsset(url: URL(fileURLWithPath: Bundle.main.path(forResource: "SampleAudio1", ofType: "mp3")!))
         player = AVPlayer(url: URL(fileURLWithPath: Bundle.main.path(forResource: "VideoExample1", ofType: "mp4")!))
         player.currentItem?.addObserver(self, forKeyPath: "duration", options: [.new, .initial], context: nil)
         playerItem = player.currentItem
@@ -357,6 +360,7 @@ class WhiteVideoViewController: UIViewController {
     @IBAction func trimVideoPressed(_ sender: Any) {
         saveVideoButton.isHidden = false
         trimButton.isHidden = true
+        saveVideoButton.layer.cornerRadius = saveVideoButton.frame.width / 5
         
         // Add CutAudioView
         cutVideoView = ThumbnailCutVideoView(frame: CGRect(x: 40, y: 10, width: self.view.frame.width - 80, height: 62), fileImage: getThumbnailFrom(path: URL(fileURLWithPath: Bundle.main.path(forResource: "VideoExample1", ofType: "mp4")!))!)
@@ -442,5 +446,92 @@ class WhiteVideoViewController: UIViewController {
         
         self.buildComposition()
         self.updatePlayerItem()
+    }
+    
+    // MARK: - Add Audio To video
+    @IBAction func addMusicToVideoPressed(_ sender: Any) {
+        originAssetAudio.tracks.forEach { (track) in
+            if track.mediaType == .audio {
+                let trackComposition = self.mutableComposition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: track.trackID)
+                try? trackComposition?.insertTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: CMTime(seconds: 60, preferredTimescale: 1)), of: track, at: .zero)
+                trackComposition?.scaleTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: CMTime(seconds: 60, preferredTimescale: 1)), toDuration: CMTime(seconds: 25, preferredTimescale: 1))
+            }
+        }
+        let trackCompositionz = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+        try? trackCompositionz?.insertTimeRange(CMTimeRange(start: CMTime(seconds: 0, preferredTimescale: 1), duration: mutableComposition.duration), of: originAssetVideo.tracks(withMediaType: .video).first!, at: .zero)
+        
+        playerItem = AVPlayerItem(asset: mutableComposition)
+        playerItem.audioTimePitchAlgorithm = .varispeed
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
+    // MARK: - Merge Video
+    @IBAction func mergeVideoPressed(_ sender: Any) {
+        mutableComposition = AVMutableComposition()
+                
+        guard let firstTrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
+        do { try firstTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originAssetVideo!.duration), of: originAssetVideo!.tracks(withMediaType: .video)[0], at: .zero)
+        } catch {
+            print("Failed to load first track")
+            return
+        }
+        
+        guard let secondtrack = mutableComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
+        do { try secondtrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originAssetVideo2!.duration), of: originAssetVideo2!.tracks(withMediaType: .video)[0], at: originAssetVideo!.duration)
+        }
+        catch {
+            print("Failed to load second track")
+            return
+        }
+        
+        if let loadedAudioAsset1 = originAssetVideo {
+            let audioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 0)
+            do {
+                try audioTrack?.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originAssetVideo!.duration), of: loadedAudioAsset1.tracks(withMediaType: .audio)[0], at: .zero)
+            }
+            catch {
+                print("Failed to load Audio track")
+            }
+        }
+        
+        if let loadedAudioAsset2 = originAssetVideo2 {
+            let audioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 0)
+            do {
+                try audioTrack?.insertTimeRange(CMTimeRangeMake(start: .zero, duration: originAssetVideo2!.duration), of: loadedAudioAsset2.tracks(withMediaType: .audio)[0], at: originAssetVideo!.duration)
+            }
+            catch {
+                print("Failed to load Audio track")
+            }
+        }
+        
+        let mainInstruction = AVMutableVideoCompositionInstruction()
+        mainInstruction.timeRange = CMTimeRangeMake(start: .zero, duration: mutableComposition.duration)
+        
+        let firstInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[0])
+        firstInstruction.setOpacity(0.0, at: originAssetVideo!.duration)
+        let transform1 = firstTrack.preferredTransform.concatenating(CGAffineTransform.init(translationX: 0.001, y: 0))
+        firstInstruction.setTransform(transform1, at: .zero)
+        
+        let secondInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: mutableComposition.tracks[1])
+        let transform2 = CGAffineTransform(translationX: 0.001, y: 0)
+        secondInstruction.setTransform(transform2, at: originAssetVideo!.duration)
+        
+        mainInstruction.layerInstructions = [firstInstruction, secondInstruction]
+        
+        let videoComposition = AVMutableVideoComposition()
+        videoComposition.instructions = [mainInstruction]
+        videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
+        videoComposition.renderSize = CGSize(width: firstTrack.naturalSize.width, height: firstTrack.naturalSize.height)
+
+        // preview video after merge
+        timeDurationLabel.text = String(mutableComposition.duration.seconds)
+        playerItem = AVPlayerItem(asset: mutableComposition)
+        playerItem.videoComposition = videoComposition
+        player.replaceCurrentItem(with: playerItem)
+    }
+    
+    // MARK: - Flip Video
+    @IBAction func flipVIdeoPressed(_ sender: Any) {
+        
     }
 }
